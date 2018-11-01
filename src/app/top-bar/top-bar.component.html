@@ -5,8 +5,8 @@
   <button mat-icon-button  id="seachButton"><mat-icon svgIcon="search-icon"></mat-icon>
   </button>
   
-  <button mat-button  class="toolbarMainButton">Home</button>
-  <button mat-button  class="toolbarMainButton">Places</button>
+  <button mat-button  class="toolbarMainButton" [routerLink]="['/home']">Home</button>
+  <button mat-button  class="toolbarMainButton" [routerLink]="['/places']" >Places</button>
   <button mat-button  class="toolbarLoginButton">Sign in/Sing up</button>
 </mat-toolbar>
 

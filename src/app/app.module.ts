@@ -13,13 +13,15 @@ import { FormsModule } from "@angular/forms";
 import { HttpClientModule } from "@angular/common/http";
 
 import { MyMaterial } from "./material/material.module";
+import { HomeComponent } from './home/home.component';
 //actu
 
 @NgModule({
   declarations: [
     AppComponent,
     TopBarComponent,
-    CityPlacesComponent
+    CityPlacesComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,
