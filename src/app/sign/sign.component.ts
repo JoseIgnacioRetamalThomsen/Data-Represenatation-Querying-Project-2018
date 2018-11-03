@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {FormControl, Validators} from '@angular/forms';
 import { NgForm } from "@angular/forms";
-import {User} from './../../classes/User';
+import {User} from './../classes/User';
+import {SignService} from './../services/sign.service'
 
 @Component({
   selector: 'app-sign',
@@ -16,7 +17,7 @@ export class SignComponent implements OnInit {
   emailIn;
   password;
   hide = true;
-  constructor() { }
+  constructor(private signService:SignService) { }
 
   ngOnInit() {
     console.log();
@@ -33,16 +34,36 @@ export class SignComponent implements OnInit {
 
 
 
-  onSignIn(form: NgForm) {
+  onSignIn() {
 
     console.log("s:"+this.emailIn);
     console.log("s:"+this.password);
+    var response;
+    this.signService.login(this.emailIn,this.password).subscribe(data=>{
+      response =data;
+
+      if(response.res){
+        console.log("login");
+      }else
+      {
+        console.log("not login");
+      }
+    });
     
   }
-  onSignUp(form: NgForm) {
+
+  onSignUp() {
 
     console.log("u:"+this.emailIn);
     console.log("u:"+this.password);
+var r;
+    this.signService.addUser(this.emailIn,this.password).subscribe(data=>{
+       //console.log(data);
+      r=data;
+      if(r.res){
+        console.log("response");
+      }
+    });
     
   }
 

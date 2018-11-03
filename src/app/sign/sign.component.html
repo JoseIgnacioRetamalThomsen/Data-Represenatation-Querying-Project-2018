@@ -13,7 +13,7 @@
       </mat-expansion-panel-header>
 
 
-      <form class="SignInForm" (submit)="onSignIn(postForm)" #postForm="ngForm">
+      <form class="SignInForm" (submit)="onSignIn()" #postForm="ngForm">
         <div class="example-container">
           <mat-form-field>
             <input matInput placeholder="Email address" required [(ngModel)]="emailIn" name="emailIn">
@@ -50,7 +50,7 @@
 
       </mat-expansion-panel-header>
 
-      <form class="SignUpForm" (submit)="onSignUp(postForm)" #postForm="ngForm">
+      <form class="SignUpForm" (submit)="onSignUp()" #postForm="ngForm">
        
         <div class="example-container">
           
