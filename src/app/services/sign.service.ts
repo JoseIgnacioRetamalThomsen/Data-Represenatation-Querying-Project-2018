@@ -10,9 +10,9 @@ export class SignService {
 
   constructor(private http: HttpClient) { }
 
-  addUser(email: string, password: string) {
+  addUser(email: string, password: string , name:string ) {
 
-    const user: User = { email: email, password: password };
+    const user: User = { email: email, password: password, name:name };
 
     return this.http.post("http://localhost:8081/api/user",user);
 
@@ -20,7 +20,7 @@ export class SignService {
 
   login(email: string, password: string) {
 
-    const user: User = { email: email, password: password };
+    const user: User = { email: email, password: password, name };
 
     return this.http.post("http://localhost:8081/api/login",user);
   }

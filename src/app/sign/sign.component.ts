@@ -15,6 +15,7 @@ export class SignComponent implements OnInit {
   panelOpenState = true;
   
   emailIn;
+  nameIn;
   password;
   hide = true;
   constructor(private signService:SignService) { }
@@ -57,12 +58,11 @@ export class SignComponent implements OnInit {
     console.log("u:"+this.emailIn);
     console.log("u:"+this.password);
 var r;
-    this.signService.addUser(this.emailIn,this.password).subscribe(data=>{
+    this.signService.addUser(this.emailIn,this.password,this.nameIn).subscribe(data=>{
        //console.log(data);
       r=data;
-      if(r.res){
-        console.log("response");
-      }
+      console.log("res"+r.created);
+      
     });
     
   }

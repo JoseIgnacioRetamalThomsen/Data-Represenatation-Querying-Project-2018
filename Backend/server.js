@@ -16,8 +16,9 @@ mongoose.connect(mongoDB);
 var Schema = mongoose.Schema;
 
 var userSchema = new Schema({
-    email: String,
-    password: String
+    email: { type: String, unique: true },
+    password: String,
+    name: String
 });
 //conver schema to model
 var userModel = mongoose.model("users", userSchema);
@@ -40,49 +41,83 @@ app.use(function (req, res, next) {
 
 /*
 * Create new User
+* don't allow repeat users : Check if the user exist -> return true if user was created.
 */
-app.post('/api/user', function (req, res){
+app.post('/api/user', function (req, res) {
 
-    console.log("called");
-   var user = new userModel({email: req.body.email,
-    password: req.body.password});
+    var createdR = false;
+    console.log("New call to post(/api/user) :" + req);
 
+    var user = new userModel({
+        email: req.body.email,
+        password: req.body.password, name: req.body.name
+    });
+    try {
+        user.save(function (err1, user) {
+            if (err1)
+                res.json({ created: false });
+                else
+                res.json({ created: true });
+        
+            //
+
+            console.log("created");
+            created = true;
+            //res.json({ created: true });
+        });
+    } catch (error) { }
+
+
+
+
+});
+
+// res.json({created:false});
+/*
     user.save(function (err, user) {
         if (err) return console.error(err);
       
       });
-
+      */
+/*
     userModel.create({
         email: req.body.email,
-        password: req.body.password
+        password: req.body.password,
+        name : req.body.name,
     });
+*/
 
-    res.json({res:true});
-});
 
 /*
 * Check login
 */
-app.post('/api/login', function (req, res){
-    console.log("login request , email = -"+ req.body.email+"- password= -"+req.body.password);
+app.post('/api/login', function (req, res) {
+    console.log("login request , email = -" + req.body.email + "- password= -" + req.body.password);
     userModel.findOne({ 'email': req.body.email }, function (err, data) {
-        
-        if (err){
-            res.json({res:false});
+
+        if (err) {
+            res.json({ res: false });
         }
-        
-        if( req.body.password == data.password)
-        {
-        console.log("yes");
-        res.json({res:true});
-        }else{
+
+        if (req.body.password == data.password) {
+            console.log("yes");
+            res.json({ res: true });
+        } else {
             console.log("no");
-            res.json({res:false});
+            res.json({ res: false });
         }
-       // res.json(data);
+        // res.json(data);
     });
 
 });
+
+/*
+* Get all user name
+*/
+app.get('/api/usernames', function (req, res) {
+
+});
+
 /*
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");

@@ -59,9 +59,14 @@
             <mat-error *ngIf="email.invalid">{{getErrorMessage()}}</mat-error>
           </mat-form-field>
 
+          <mat-form-field>
+            <input matInput placeholder="Name" required [(ngModel)]="nameIn" name="name" type="text">
+            
+          </mat-form-field>
+
 
           <mat-form-field>
-            <input matInput placeholder="Enter your password" [type]="hide ? 'password' : 'text'" required [(ngModel)]="password"
+            <input matInput placeholder="Create your password" [type]="hide ? 'password' : 'text'" required [(ngModel)]="password"
               name="password">
             <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
           </mat-form-field>
