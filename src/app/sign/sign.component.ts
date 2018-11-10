@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import {FormControl, Validators} from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
 import { NgForm } from "@angular/forms";
-import {User} from './../classes/User';
-import {SignService} from './../services/sign.service'
+import { User } from './../classes/User';
+import { SignService } from '../services/sign.service'
+import { Router } from "@angular/router";
+import {SessionService} from './../services/session.service'
 
 @Component({
   selector: 'app-sign',
@@ -11,60 +13,81 @@ import {SignService} from './../services/sign.service'
 })
 export class SignComponent implements OnInit {
   email = new FormControl('', [Validators.required, Validators.email]);
+  //[(ngModel)]="emailIn"
 
   panelOpenState = true;
-  
+
   emailIn;
   nameIn;
   password;
   hide = true;
-  constructor(private signService:SignService) { }
+
+  isUnchanged = true;
+
+  constructor(private signService: SignService, private router: Router,private session : SessionService) { }
 
   ngOnInit() {
     console.log();
   }
 
 
-  
+
 
   getErrorMessage() {
     return this.email.hasError('required') ? 'You must enter a value' :
-        this.email.hasError('email') ? 'Not a valid email' :
-            '';
+      this.email.hasError('email') ? 'Not a valid email' :
+        '';
   }
 
 
 
   onSignIn() {
 
-    console.log("s:"+this.emailIn);
-    console.log("s:"+this.password);
+    console.log("s:" + this.email.value);
+    console.log("s:" + this.password);
     var response;
-    this.signService.login(this.emailIn,this.password).subscribe(data=>{
-      response =data;
+    this.signService.login(this.email.value, this.password).subscribe(data => {
+      response = data;
 
-      if(response.res){
-        console.log("login");
-      }else
-      {
+      if (response.res) {
+
+        this.session.logIn(response.name,this.email.value);
+
+        this.router.navigate(['home']);
+          window.location.reload();
+
+      } else {
         console.log("not login");
       }
     });
-    
+
   }
 
   onSignUp() {
 
-    console.log("u:"+this.emailIn);
-    console.log("u:"+this.password);
-var r;
-    this.signService.addUser(this.emailIn,this.password,this.nameIn).subscribe(data=>{
-       //console.log(data);
-      r=data;
-      console.log("res"+r.created);
-      
-    });
-    
+    console.log("u:" + this.email.value);
+    console.log("u:" + this.password);
+    var r;
+    if(this.password==null){console.log("ynull")}
+    if (this.email.valid && this.password!=null &&this.nameIn!=null &&this.password!=""&&this.nameIn!="") {
+
+      this.signService.addUser(this.email.value, this.password, this.nameIn).subscribe(data => {
+        //console.log(data);
+        r = data;
+        console.log("res" + r.created);
+        if (r.created) {
+          console.log("u:" + this.password);
+          this.router.navigate(['home']);
+          window.location.reload();
+
+          this.session.logIn(this.nameIn,this.email.value);
+
+        } else {
+          this.isUnchanged = false;
+        }
+
+      });
+    }
   }
 
 }

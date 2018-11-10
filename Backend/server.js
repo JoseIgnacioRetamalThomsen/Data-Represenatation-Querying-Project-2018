@@ -59,11 +59,9 @@ app.post('/api/user', function (req, res) {
                 else
                 res.json({ created: true });
         
-            //
+           
 
-            console.log("created");
-            created = true;
-            //res.json({ created: true });
+          
         });
     } catch (error) { }
 
@@ -101,7 +99,7 @@ app.post('/api/login', function (req, res) {
 
         if (req.body.password == data.password) {
             console.log("yes");
-            res.json({ res: true });
+            res.json({ res: true,name : data.name,email :data.email});
         } else {
             console.log("no");
             res.json({ res: false });
@@ -116,7 +114,26 @@ app.post('/api/login', function (req, res) {
 */
 app.get('/api/usernames', function (req, res) {
 
+    console.log("usernames requested.")
+    
+    userModel.find({}, "name",function (err, data) {
+       
+        if(err){
+            res.send(err);
+        }
+        console.log(data);
+        res.json(data);
+    });
 });
+
+/*
+* Get one user by id
+*/
+
+app.get('/api/user:id', function (req, res) {
+
+});
+
 
 /*
 app.use(function (req, res, next) {

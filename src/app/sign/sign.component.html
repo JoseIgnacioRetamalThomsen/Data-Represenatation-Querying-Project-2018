@@ -16,7 +16,7 @@
       <form class="SignInForm" (submit)="onSignIn()" #postForm="ngForm">
         <div class="example-container">
           <mat-form-field>
-            <input matInput placeholder="Email address" required [(ngModel)]="emailIn" name="emailIn">
+            <input matInput placeholder="Email address" required  name="emailIn" [formControl]="email">
             <mat-error *ngIf="email.invalid">{{getErrorMessage()}}</mat-error>
           </mat-form-field>
 
@@ -55,7 +55,7 @@
         <div class="example-container">
           
           <mat-form-field>
-            <input matInput placeholder="Email address" required [(ngModel)]="emailIn" name="emailIn">
+            <input matInput placeholder="Email address" required [formControl]="email" name="emailIn">
             <mat-error *ngIf="email.invalid">{{getErrorMessage()}}</mat-error>
           </mat-form-field>
 
@@ -67,13 +67,13 @@
 
           <mat-form-field>
             <input matInput placeholder="Create your password" [type]="hide ? 'password' : 'text'" required [(ngModel)]="password"
-              name="password">
+              name="password" required>
             <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
           </mat-form-field>
 
         
         </div>
-
+        <h3  [hidden]="isUnchanged" >That email is taken.</h3>
         <button mat-raised-button color="accent" type="submit">Sign Up</button>
     
 

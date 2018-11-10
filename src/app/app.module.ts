@@ -19,6 +19,8 @@ import { SignComponent } from './sign/sign.component';
 
 import { FormsModule } from "@angular/forms";
 import { ReactiveFormsModule} from '@angular/forms';
+import { UsersSideListComponent } from './users-side-list/users-side-list.component';
+import { UserDetailsComponent } from './user-details/user-details.component';
 
 //actu
 
@@ -28,7 +30,9 @@ import { ReactiveFormsModule} from '@angular/forms';
     TopBarComponent,
     CityPlacesComponent,
     HomeComponent,
-    SignComponent
+    SignComponent,
+    UsersSideListComponent,
+    UserDetailsComponent
   ],
   imports: [
     BrowserModule,
