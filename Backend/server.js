@@ -35,6 +35,7 @@ app.use(bodyParser.json());
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, OPTIONS");
     next();
 });
 
@@ -56,12 +57,12 @@ app.post('/api/user', function (req, res) {
         user.save(function (err1, user) {
             if (err1)
                 res.json({ created: false });
-                else
+            else
                 res.json({ created: true });
-        
-           
 
-          
+
+
+
         });
     } catch (error) { }
 
@@ -99,7 +100,7 @@ app.post('/api/login', function (req, res) {
 
         if (req.body.password == data.password) {
             console.log("yes");
-            res.json({ res: true,name : data.name,email :data.email});
+            res.json({ res: true, name: data.name, email: data.email });
         } else {
             console.log("no");
             res.json({ res: false });
@@ -115,10 +116,10 @@ app.post('/api/login', function (req, res) {
 app.get('/api/usernames', function (req, res) {
 
     console.log("usernames requested.")
-    
-    userModel.find({}, "name",function (err, data) {
-       
-        if(err){
+
+    userModel.find({}, "name", function (err, data) {
+
+        if (err) {
             res.send(err);
         }
         console.log(data);
@@ -129,10 +130,49 @@ app.get('/api/usernames', function (req, res) {
 /*
 * Get one user by id
 */
+app.get('/api/user/:id', function (req, res) {
 
-app.get('/api/user:id', function (req, res) {
+    console.log("Call to user:id = " + req.params.id);
 
-});
+    userModel.findById(req.params.id, '-password', function (err, data) {
+
+        res.json(data);
+
+    });
+
+});//Get one user by id
+
+
+/*
+* Get one user by email
+*/
+app.get('/api/userEmail/:email', function (req, res) {
+
+    console.log("Call to user:id = " + req.params.email);
+
+    userModel.findOne({ email: req.params.email }, '-password', function (err, data) {
+        console.log(data);
+        res.json(data);
+
+    });
+
+});//Get one user by email
+
+/*
+*   Delete by id
+*/
+app.delete("/api/user/:id", function (req, res) {
+
+    console.log(req.params.id);
+
+    userModel.deleteOne({ _id: req.params.id }, function (err, data) {
+        if (err) {
+            res.send(err);
+        }
+        res.send(data);
+    })
+
+});// Delete by id
 
 
 /*

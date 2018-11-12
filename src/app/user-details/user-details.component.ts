@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { SignService } from '../services/sign.service';
+import { User } from '../classes/User';
 
 @Component({
   selector: 'app-user-details',
@@ -10,12 +11,13 @@ import { SignService } from '../services/sign.service';
 })
 export class UserDetailsComponent implements OnInit {
   
+  user ;
   id1;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private httpService: SignService) {
+    private signService: SignService) {
 
     // force route reload whenever params change (stack overflow)
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
@@ -28,8 +30,15 @@ export class UserDetailsComponent implements OnInit {
 
   getUser() {
     const id = this.route.snapshot.paramMap.get('id');
-    console.log("w" + id);
-    this.id1 = "" + id;
+
+    this.signService.getUserById(id).subscribe((userData) =>{
+
+      this.user =userData;
+      console.log(this.user.name);
+     
+    });
+    this.id1=id;
+    
   }
   ngOnChanges() {
     console.log(this.route.snapshot.paramMap.get('id'));

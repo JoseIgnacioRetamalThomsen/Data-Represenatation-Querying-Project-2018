@@ -25,17 +25,31 @@ export class SignService {
     const user: User = { email: email, password: password, name };
 
     return this.http.post("http://localhost:8081/api/login", user);
+
   }
 
 
   getUserBasic() {
+
     return this.http.get("http://localhost:8081/api/usernames");
+
   }
 
   getUserById(id: string) {
 
     return this.http.get("http://localhost:8081/api/user/" + id);
-    
+
   }
 
+  getUserByEmail(email: string) {
+
+    return this.http.get("http://localhost:8081/api/userEmail/" + email);
+
+  }
+
+  deleteUserById(id: string): Observable<any> {
+
+    return this.http.delete("http://localhost:8081/api/user/" + id);
+
+  }
 }

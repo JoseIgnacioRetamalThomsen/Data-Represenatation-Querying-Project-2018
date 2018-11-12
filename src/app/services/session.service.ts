@@ -19,6 +19,8 @@ export class SessionService {
 
   logOut(){
     localStorage.setItem('isLogin', "false");
+    localStorage.setItem('name', "");
+    localStorage.setItem('email', "");
   }
 
   isLogin():boolean{
@@ -28,5 +30,8 @@ export class SessionService {
   }
   getName():string{
     return localStorage.getItem('name')
+  }
+  getEmail():string{
+    return localStorage.getItem('email')
   }
 }

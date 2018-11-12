@@ -1,0 +1,28 @@
+.example-container {
+    
+
+    position: relative;
+   
+    top: 0;
+    bottom: 0;
+    left:0;
+    right: 0;
+    background: #eee;
+  max-width: 800px;
+   
+
+    
+ 
+  }
+  .placesLeft{
+  
+  }
+  .placesRight{
+    
+  }
+  .test{
+    display: flex;
+    
+ 
+    justify-content:center;
+  }

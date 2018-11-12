@@ -1,0 +1,14 @@
+.formContainer{
+    display: flex;
+    flex-direction: column;
+}
+.edit-card, .password-card, .delete-acount-card{
+    margin: 10px;
+}
+.example-section {
+    display: flex;
+    align-content: center;
+    align-items: center;
+ 
+    flex-direction: column;
+  }

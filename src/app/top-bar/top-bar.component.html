@@ -14,7 +14,7 @@
   </div>
 
   <div *ngIf="isLoggedIn" class="nameLogout">
-    <button mat-button class="toolbarMainButton">{{user.name}}</button>
+    <button mat-button class="toolbarMainButton" [routerLink]="['/my']">{{user.name}}</button>
     <button class="x" mat-button class="toolbarLoginButton" (click)="logOut()">/ log out</button>
   </div>
 

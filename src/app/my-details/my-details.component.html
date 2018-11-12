@@ -1,0 +1,68 @@
+<mat-card class="edit-card">
+  <mat-card-header>
+
+    <mat-card-title>Edit your details</mat-card-title>
+
+  </mat-card-header>
+
+  <form class="EditDetailsForm" (submit)="onChangeDetails()" #postForm="ngForm">
+
+    <div class="formContainer" *ngIf=user>
+
+      <mat-form-field>
+        <input matInput placeholder="user name" required [(ngModel)]="user.name" name="name" type="text">
+
+      </mat-form-field>
+
+      <mat-form-field>
+        <input matInput placeholder="Email address" required [formControl]="email" name="emailIn">
+        <mat-error *ngIf="email.invalid">{{getErrorMessage()}}</mat-error>
+      </mat-form-field>
+
+      <button mat-raised-button color="accent" type="submit">Save Changes</button>
+
+    </div>
+  </form>
+</mat-card>
+
+<mat-card class="password-card">
+
+  <mat-card-header>
+
+    <mat-card-title>Change your pasword</mat-card-title>
+
+  </mat-card-header>
+
+  <form class="changePasswordForm" (submit)="onPassword()" #postForm="ngForm">
+
+    <div class="formContainer" *ngIf=user>
+
+
+
+      <button mat-raised-button color="accent" type="submit">Change password</button>
+
+    </div>
+  </form>
+
+</mat-card>
+<mat-card class="delete-acount-card">
+
+  <mat-card-header>
+
+    <mat-card-title>Delete your account</mat-card-title>
+
+  </mat-card-header>
+
+  <form class="deleteAccountForm" (submit)="onDelete()" #postForm="ngForm">
+
+    <section class="example-section">
+
+      <mat-checkbox class="example-margin" [(ngModel)]="disabled">Disabled</mat-checkbox>
+
+      <button mat-raised-button color="accent" type="submit" [disabled]="disabled">Delete your acount</button>
+    
+    </section>
+  
+  </form>
+
+</mat-card>

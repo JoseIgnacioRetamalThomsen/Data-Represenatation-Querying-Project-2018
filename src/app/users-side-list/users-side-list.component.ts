@@ -23,4 +23,13 @@ export class UsersSideListComponent implements OnInit {
     });
   }
 
+  onUserClick(){
+    console.log("working");
+  }
+  onMouseEnter(){
+    console.log("working");
+  }
+  onMouseLeave(){
+    console.log("working leave");
+  }
 }

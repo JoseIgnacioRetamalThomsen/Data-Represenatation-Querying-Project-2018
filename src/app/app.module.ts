@@ -21,6 +21,7 @@ import { FormsModule } from "@angular/forms";
 import { ReactiveFormsModule} from '@angular/forms';
 import { UsersSideListComponent } from './users-side-list/users-side-list.component';
 import { UserDetailsComponent } from './user-details/user-details.component';
+import { MyDetailsComponent } from './my-details/my-details.component';
 
 //actu
 
@@ -32,7 +33,8 @@ import { UserDetailsComponent } from './user-details/user-details.component';
     HomeComponent,
     SignComponent,
     UsersSideListComponent,
-    UserDetailsComponent
+    UserDetailsComponent,
+    MyDetailsComponent
   ],
   imports: [
     BrowserModule,
