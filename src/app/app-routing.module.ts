@@ -11,7 +11,7 @@ import { MyDetailsComponent } from './my-details/my-details.component';
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
-  { path: 'places', component: CityPlacesComponent },
+  { path: 'places/:num', component: CityPlacesComponent },
   { path: "sign" , component : SignComponent},
   { path: 'detail/:id', component: UserDetailsComponent },
   { path: 'my', component : MyDetailsComponent } ,

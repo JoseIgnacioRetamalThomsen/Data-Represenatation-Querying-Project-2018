@@ -1,24 +1,20 @@
-<div class="Test">
-  <mat-drawer-container class="example-container">
-    <mat-drawer mode="side" opened>
-      <mat-list>
-        <mat-list-item> Pepper </mat-list-item>
-        <mat-list-item> Salt </mat-list-item>
-        <mat-list-item> Paprika </mat-list-item>
-      </mat-list>
+<div class="main">
+  <div class="left">
+    <mat-list *ngFor="let place of places; let i = index">
+      <a mat-list-item routerLink="/places/{{i}}"> {{place.name}} </a>
 
-    </mat-drawer>
+    </mat-list>
+  </div>
+  <div class="right">
 
-    <mat-drawer-content>
-
-
-      <mat-card class="example-card">
+    <div *ngIf="place">
+      <mat-card class="placesRight">
         <mat-card-header>
           <div mat-card-avatar class="example-header-image"></div>
           <mat-card-title>{{place.name}}</mat-card-title>
           <mat-card-subtitle>Dog Breed</mat-card-subtitle>
         </mat-card-header>
-        <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu">
+        <img mat-card-image src="{{place.photoAddress}}" alt="Galway place photo.">
         <mat-card-content>
           <p>
             {{place.description}}
@@ -26,10 +22,21 @@
         </mat-card-content>
         <mat-card-actions>
           <button mat-button>LIKE</button>
-          <button mat-button>SHARE</button>
+          <button mat-button>Comment</button>
         </mat-card-actions>
-      </mat-card>
 
-    </mat-drawer-content>
-  </mat-drawer-container>
+        <form (submit)="onAddComment()">
+          <div class="comment-form">
+          <mat-form-field class="example-full-width">
+            <textarea matInput placeholder="Leave a comment"></textarea>
+          </mat-form-field>
+
+          <button mat-raised-button color="accent" type="submit" class="button">Add</button>
+        </div>
+        </form>
+
+
+      </mat-card>
+    </div>
+  </div>
 </div>

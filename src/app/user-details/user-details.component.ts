@@ -17,7 +17,8 @@ export class UserDetailsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private signService: SignService) {
+    private signService: SignService
+    ) {
 
     // force route reload whenever params change (stack overflow)
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;

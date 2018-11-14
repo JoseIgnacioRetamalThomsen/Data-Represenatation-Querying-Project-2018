@@ -1,28 +1,25 @@
-.example-container {
-    
 
-    position: relative;
-   
-    top: 0;
-    bottom: 0;
-    left:0;
-    right: 0;
-    background: #eee;
-  max-width: 800px;
    
 
     
  
-  }
-  .placesLeft{
   
+.left{
+    flex:30%;
+}
+.right{
+       flex:70%;
+     }
+.main{
+
+display: flex;
+
+align-content: center;
   }
-  .placesRight{
-    
-  }
-  .test{
+  .comment-form{
     display: flex;
-    
- 
-    justify-content:center;
+    flex-direction: column;
+  }
+  .button{
+    max-width: 100px;
   }
