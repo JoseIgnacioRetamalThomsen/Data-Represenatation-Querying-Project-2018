@@ -6,6 +6,8 @@ import { AppComponent } from './app.component';
 
 import { TopBarComponent } from './top-bar/top-bar.component';
 import {CityPlacesComponent} from "./city-places/city-places.component"
+import {EditCommentDialogComponent} from './edit-comment-dialog/edit-comment-dialog.component'
+
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -23,6 +25,7 @@ import { UsersSideListComponent } from './users-side-list/users-side-list.compon
 import { UserDetailsComponent } from './user-details/user-details.component';
 import { MyDetailsComponent } from './my-details/my-details.component';
 
+
 //actu
 
 @NgModule({
@@ -34,7 +37,10 @@ import { MyDetailsComponent } from './my-details/my-details.component';
     SignComponent,
     UsersSideListComponent,
     UserDetailsComponent,
-    MyDetailsComponent
+    MyDetailsComponent,
+    EditCommentDialogComponent
+  
+   
   ],
   imports: [
     BrowserModule,
@@ -44,10 +50,15 @@ import { MyDetailsComponent } from './my-details/my-details.component';
     HttpClientModule,
     MyMaterial,
     ReactiveFormsModule,
+   
   ],
   //  exports: [
   // MatToolbarModule,
   // ],
+  entryComponents: [
+    CityPlacesComponent,
+    EditCommentDialogComponent
+  ],
   providers: [],
   bootstrap: [AppComponent]
 })

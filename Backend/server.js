@@ -64,10 +64,11 @@ app.post('/api/user', function (req, res) {
     });
     try {
         user.save(function (err1, user) {
+            console.log("hits"+user);
             if (err1)
                 res.json({ created: false });
             else
-                res.json({ created: true });
+                res.json({ created: true ,id:user._id });
 
 
 
@@ -109,7 +110,7 @@ app.post('/api/login', function (req, res) {
 
         if (req.body.password == data.password) {
             console.log("yes");
-            res.json({ res: true, name: data.name, email: data.email });
+            res.json({ res: true, name: data.name, email: data.email,id: data._id });
         } else {
             console.log("no");
             res.json({ res: false });
@@ -240,20 +241,62 @@ var commentsSchema = new Schema({
 //conver schema to model
 var commentsModel = mongoose.model("comments", commentsSchema);
 
+/*
+* Add new comment
+*/
+
 app.post('/api/comment', function (req, res) {
     /* console.log("Title is " + req.body.title);
      console.log("content is " + req.body.content);
  */
 
+ console.log(req.body.placeId);
 commentsModel.create({
         commenterName: req.body.commenterName,
         commenterId: req.body.commenterId,
         placeId: req.body.placeId,
-        comment: req.body.comment,
-    })
+        comment: req.body.comment
+    });
 
+    res.send({created:true});
 });
 
+/*
+* Get all comments for 1 place
+*/ 
+
+app.get('/api/comments/:placeId', function (req, res) {
+
+    console.log("places = " + req.params.placeId);
+
+    commentsModel.find({ placeId: req.params.placeId }, '-password', function (err, data) {
+        console.log(data);
+        res.json(data);
+
+    });
+
+});//Get one user by email
+
+/*
+*   Delete comment by id
+*/
+app.delete("/api/comment/:id", function (req, res) {
+
+    console.log("Request to delete a comment, id: "+ req.params.id);
+
+    commentsModel.deleteOne({ _id: req.params.id }, function (err, data) {
+
+        if (err) {
+            res.send(err);
+        }
+
+        res.send(data);
+        
+        console.log("Request to delete done.")
+
+    });
+
+});// Delete by id
 
 
 /*

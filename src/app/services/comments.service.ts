@@ -19,4 +19,17 @@ export class CommentsService {
     return this.http.post("http://localhost:8081/api/comment", commentToSend);
 
   }
+
+  getCommentsPlace(placeId:string){
+
+    return this.http.get("http://localhost:8081/api/comments/" + placeId);
+  }
+
+
+  deletecommentId(id: string): Observable<any> {
+
+    return this.http.delete("http://localhost:8081/api/comment/" + id);
+
+  }
+
 }

@@ -5,12 +5,19 @@ import { Injectable } from '@angular/core';
 })
 export class SessionService {
 
-  constructor() { }
+  constructor() {
 
-  logIn(name:string,email:string){
+    console.log("Seecion constructor , login " +localStorage.getItem('isLogin') );
+    if(localStorage.getItem('isLogin')==null){
+      localStorage.setItem('isLogin', "false");
+    }
+   }
+
+  logIn(name:string,email:string,id:string){
     localStorage.setItem('isLogin', "true");
     localStorage.setItem('name', name);
     localStorage.setItem('email', email);
+    localStorage.setItem('id', id);
 
     console.log("logger in : " + name + " " + email);
 
@@ -21,6 +28,7 @@ export class SessionService {
     localStorage.setItem('isLogin', "false");
     localStorage.setItem('name', "");
     localStorage.setItem('email', "");
+    localStorage.setItem('id', "");
   }
 
   isLogin():boolean{
@@ -33,5 +41,8 @@ export class SessionService {
   }
   getEmail():string{
     return localStorage.getItem('email')
+  }
+  getId():string{
+    return localStorage.getItem('id');
   }
 }

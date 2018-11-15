@@ -25,15 +25,62 @@
           <button mat-button>Comment</button>
         </mat-card-actions>
 
-        <form (submit)="onAddComment()">
-          <div class="comment-form">
-          <mat-form-field class="example-full-width">
-            <textarea matInput placeholder="Leave a comment"></textarea>
-          </mat-form-field>
+        <!--Comments-->
+        <mat-accordion multi="true" *ngIf="allCommentsPlace.length > 0">
+          <mat-expansion-panel [expanded]="true">
+            <mat-expansion-panel-header>
+              Comments
+            </mat-expansion-panel-header>
+            <mat-card *ngFor="let comment of allCommentsPlace">
+              <mat-card-header>
+                  <img mat-card-avatar  src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="...">
+                  <mat-card-title>{{comment.commenterName}}</mat-card-title>
 
-          <button mat-raised-button color="accent" type="submit" class="button">Add</button>
+              </mat-card-header>
+
+
+              <mat-card-content>
+                <p>
+                  {{comment.comment}}
+                </p>
+              </mat-card-content>
+              <mat-card-actions>
+                <button mat-raised-button>LIKE</button>
+
+                <button mat-raised-button *ngIf="comment.commenterId==userId" (click)="openDialog()">EDIT</button>
+                <button mat-raised-button *ngIf="comment.commenterId==userId" (click)="onDelete(comment._id)">DELETE</button>
+
+
+
+              </mat-card-actions>
+
+            </mat-card>
+
+          </mat-expansion-panel>
+        </mat-accordion>
+
+
+
+
+
+        <div *ngIf="isLogin">
+          <form (submit)="onAddPost(postForm)" #postForm="ngForm">
+            <div class="comment-form">
+              <mat-form-field>
+                <textarea matInput placeholder="Leave a comment" name="comment" [(ngModel)]="comment"></textarea>
+              </mat-form-field>
+
+              <button mat-raised-button color="accent" type="submit" class="button">Add</button>
+            </div>
+          </form>
         </div>
-        </form>
+
+
+        <div *ngIf="isLogin==false">
+
+          <button mat-button class="toolbarLoginButton" [routerLink]="['/sign']">Sign in/Sign up for comment</button>
+        </div>
+
 
 
       </mat-card>

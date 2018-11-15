@@ -55,7 +55,7 @@ export class SignComponent implements OnInit {
 
       if (response.res) {
 
-        this.session.logIn(response.name,this.email.value);
+        this.session.logIn(response.name,this.email.value,response.id);
 
         this.router.navigate(['home']);
           window.location.reload();
@@ -82,10 +82,13 @@ export class SignComponent implements OnInit {
         if (r.created) {
           console.log("u:" + this.password);
           this.router.navigate(['home']);
-          window.location.reload();
+          
 
-          this.session.logIn(this.nameIn,this.email.value);
+          console.log("login: id" + r );
+          console.log( r );
+          this.session.logIn(this.nameIn,this.email.value,r.id);
 
+          //window.location.reload();
         } else {
           this.isUnchanged = false;
         }
