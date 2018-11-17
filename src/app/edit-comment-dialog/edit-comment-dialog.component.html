@@ -1,5 +1,9 @@
-<h1>Edit</h1>
-<textarea matInput [(ngModel)]="comment">{{data.comment}}</textarea>
 
-<button mat-button (click)="onNoClick()" >Cancel</button>
-<button mat-button (click)="saveChanges()" >Save</button>
+<h1 mat-dialog-title>Edit</h1>
+<div mat-dialog-content>
+<textarea matInput [(ngModel)]="comment">{{data.comment}}</textarea>
+</div>
+<div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()">Cancel</button>
+    <button mat-button  (click)="saveChanges()">Save</button>
+</div>

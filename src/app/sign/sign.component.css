@@ -1,9 +1,9 @@
 @import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
 
 .main-cointainer{
+
     display: flex;
     flex-direction: row;
-
     align-items: center;
    justify-content: center;
     
@@ -15,5 +15,11 @@
   }
   
   .example-container > * {
+    width: 25em;
+  }
+  
+  .form-container{
+    display: flex;
+    flex-direction: column;
     width: 25em;
   }

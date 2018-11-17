@@ -3,82 +3,100 @@
   <mat-accordion>
 
     <mat-expansion-panel>
+
       <mat-expansion-panel-header>
+
         <mat-panel-title>
           Sign In
         </mat-panel-title>
-        <mat-panel-description>
 
+        <mat-panel-description>
+          Use your account.
         </mat-panel-description>
+
       </mat-expansion-panel-header>
 
 
-      <form class="SignInForm" (submit)="onSignIn()" #postForm="ngForm">
-        <div class="example-container">
+      <form class="SignInForm" (submit)="onSignIn()">
+
+        <div class="form-container">
+
           <mat-form-field>
-            <input matInput placeholder="Email address" required  name="emailIn" [formControl]="email">
-            <mat-error *ngIf="email.invalid">{{getErrorMessage()}}</mat-error>
+
+            <input matInput placeholder="Email address" required name="emailIn" [formControl]="email">
+            <mat-error *ngIf="email.invalid">{{ getErrorMessageEmail()}}</mat-error>
+
           </mat-form-field>
 
-
           <mat-form-field>
-            <input matInput placeholder="Enter your password" [type]="hide ? 'password' : 'text'" required [(ngModel)]="password"
-              name="password">
+
+            <input matInput placeholder="Enter your password" [type]="hide ? 'password' : 'text'" required
+              [formControl]="password" name="password" required>
             <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+            <mat-error *ngIf="password.invalid">{{getErrorMessagePassword()}}</mat-error>
+
           </mat-form-field>
 
         </div>
 
+        <mat-error *ngIf="wrongDataMessage">You've entered an incorrect username/password.</mat-error>
+
         <button mat-raised-button color="accent" type="submit">Sign In</button>
 
-
       </form>
-
 
     </mat-expansion-panel>
 
     <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
 
       <mat-expansion-panel-header>
+
         <mat-panel-title>
           Sign Up
         </mat-panel-title>
 
         <mat-panel-description>
-          Create your account {{panelOpenState ? 'open' : 'closed'}}
+          Create your account
         </mat-panel-description>
 
       </mat-expansion-panel-header>
 
       <form class="SignUpForm" (submit)="onSignUp()" #postForm="ngForm">
-       
-        <div class="example-container">
-          
+
+        <div class="form-container">
+
           <mat-form-field>
+
             <input matInput placeholder="Email address" required [formControl]="email" name="emailIn">
-            <mat-error *ngIf="email.invalid">{{getErrorMessage()}}</mat-error>
+            <mat-error *ngIf="email.invalid">{{ getErrorMessageEmail()}}</mat-error>
+
           </mat-form-field>
 
           <mat-form-field>
-            <input matInput placeholder="Name" required [(ngModel)]="nameIn" name="name" type="text">
-            
+
+            <input matInput placeholder="Name" required [formControl]="name" name="name" type="text">
+            <mat-error *ngIf="name.invalid">{{getErrorMessageName()}}</mat-error>
+
           </mat-form-field>
 
-
           <mat-form-field>
-            <input matInput placeholder="Create your password" [type]="hide ? 'password' : 'text'" required [(ngModel)]="password"
-              name="password" required>
+
+            <input matInput placeholder="Create your password" [type]="hide ? 'password' : 'text'" required
+              [formControl]="password" name="password" required>
             <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+            <mat-error *ngIf="password.invalid">{{getErrorMessagePassword()}}</mat-error>
+
           </mat-form-field>
 
-        
         </div>
-        <h3  [hidden]="isUnchanged" >That email is taken.</h3>
+
+        <mat-error *ngIf="emailInUseMessage">That email is already in use</mat-error>
         <button mat-raised-button color="accent" type="submit">Sign Up</button>
-    
 
       </form>
+
     </mat-expansion-panel>
+
   </mat-accordion>
 
 </div>

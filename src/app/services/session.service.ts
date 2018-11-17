@@ -37,10 +37,10 @@ export class SessionService {
     return true;
   }
   getName():string{
-    return localStorage.getItem('name')
+    return localStorage.getItem('name');
   }
   getEmail():string{
-    return localStorage.getItem('email')
+    return localStorage.getItem('email').toUpperCase();
   }
   getId():string{
     return localStorage.getItem('id');

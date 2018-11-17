@@ -32,4 +32,12 @@ export class CommentsService {
 
   }
 
-}
+  editComment(id:string,comment:string){
+
+    const com = {comment:comment};
+
+    return this.http.put("http://localhost:8081/api/updatecomment/"+id, com);
+
+  }
+
+}//CommentsService

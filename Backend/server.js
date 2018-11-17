@@ -102,24 +102,47 @@ app.post('/api/user', function (req, res) {
 * Check login
 */
 app.post('/api/login', function (req, res) {
-    console.log("login request , email = -" + req.body.email + "- password= -" + req.body.password);
+
+    console.log("Login request , email = -" + req.body.email + "- password= -" + req.body.password);
+
+    //get user data using emal
     userModel.findOne({ 'email': req.body.email }, function (err, data) {
 
+        //check for error , if error respond false
         if (err) {
             res.json({ res: false });
         }
 
-        if (req.body.password == data.password) {
-            console.log("yes");
-            res.json({ res: true, name: data.name, email: data.email, id: data._id });
-        } else {
-            console.log("no");
+        //if data null means wrong email so response false
+        if (data == null) {
+
+            console.log("Login succesfull,wrong email ");
+
             res.json({ res: false });
-        }
-        // res.json(data);
+
+        } else {
+
+            //check passsword
+            if (req.body.password == data.password) {
+
+                console.log("Login succesfull");
+
+
+                res.json({ res: true, name: data.name, email: data.email, id: data._id });
+
+            } else {
+
+                console.log("Login succesfull,wrong password ");
+
+                res.json({ res: false });
+
+            }//if (req.body.password == data.password) 
+
+        }// if (data == null)
+
     });
 
-});
+});//check login
 
 /*
 * Get all user name
@@ -186,7 +209,7 @@ app.delete("/api/user/:id", function (req, res) {
 });// Delete by id
 
 /*
-* Update user details using id
+* Update comment using id
 */
 app.put('/api/updateuser/:id', function (req, res) {
 
@@ -196,18 +219,18 @@ app.put('/api/updateuser/:id', function (req, res) {
         function (err, data) {
             if (err) {
                 res.send(err);
-                console.log(" User update unsucesfull :" + req.params.id);
+                console.log(" User update unsuccessful :" + req.params.id);
             }
 
             res.send(data);
 
-            console.log(" User update sucesfull :" + req.params.id);
+            console.log(" User update successful :" + req.params.id);
         });
 
 });//updateuser by id
 
 /*
-*   Update password by id
+*   Update comment by id
 *
 *  get id as parameter and new password in boby as {password:password}
 */
@@ -219,12 +242,12 @@ app.put('/api/updatepassword/:id', function (req, res) {
         function (err, data) {
             if (err) {
                 res.send(err);
-                console.log(" Password update unsucesfull :" + req.params.id);
+                console.log(" Password update unsuccessful :" + req.params.id);
             }
 
             res.send(data);
 
-            console.log(" Password update sucesfull :" + req.params.id);
+            console.log(" Password update successful :" + req.params.id);
         });
 
 });//updatae passowrd by id
@@ -342,7 +365,31 @@ app.delete("/api/comment/:id", function (req, res) {
 
 });// Delete by id
 
+/*
+*   Update comment by id
+*
+*  get id as parameter and new password in boby as {password:password}
+*/
+app.put('/api/updatecomment/:id', function (req, res) {
 
+    console.log("Update comment request from " + req.params.id);
+
+    commentsModel.findByIdAndUpdate(req.params.id, { $set: { comment: req.body.comment } },
+
+        function (err, data) {
+            //check for error
+            if (err) {
+                res.send(err);
+                console.log(" Comment update unsuccessful :" + req.params.id);
+            }
+
+            //respond back if update successful
+            res.send(data);
+
+            console.log(" Comment update sucessfull :" + req.params.id);
+        });
+
+});//updatae passowrd by id
 
 
 /*

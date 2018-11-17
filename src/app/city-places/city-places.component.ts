@@ -65,18 +65,22 @@ export class CityPlacesComponent implements OnInit {
 
   edit(commentId:string,comment:string){
     const commentT = { commentId: commentId}
+    
+    //open edit dialog with comment id and comment text
     this.openDialog(commentId,comment);
   }
 
   openDialog(commentId,comment:string): void {
     const dialogRef = this.dialog.open(EditCommentDialogComponent, {
       width: '250px',
+      //data send to dialog
       data: {commentId: commentId , comment:comment }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed');
       this.re = result;
+      console.log(result);
     });
   }
 
