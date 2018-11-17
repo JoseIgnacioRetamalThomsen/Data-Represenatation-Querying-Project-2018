@@ -14,7 +14,7 @@ export class SignService {
 
   addUser(email: string, password: string, name: string) {
 
-    const user: User = { email: email, password: password, name: name };
+    const user: User = { email: email.toUpperCase(), password: password, name: name };
 
     return this.http.post("http://localhost:8081/api/user", user);
 
@@ -22,7 +22,7 @@ export class SignService {
 
   login(email: string, password: string) {
 
-    const user: User = { email: email, password: password, name };
+    const user: User = { email: email.toUpperCase(), password: password, name };
 
     return this.http.post("http://localhost:8081/api/login", user);
 
@@ -43,7 +43,7 @@ export class SignService {
 
   getUserByEmail(email: string) {
 
-    return this.http.get("http://localhost:8081/api/userEmail/" + email);
+    return this.http.get("http://localhost:8081/api/userEmail/" + email.toUpperCase());
 
   }
 
@@ -55,7 +55,7 @@ export class SignService {
 
   updateUserDetails(id:string,name:string,email:string){
 
-    const user :User ={id:id,name:name,email:email};
+    const user :User ={id:id,name:name,email:email.toUpperCase()};
     return this.http.put("http://localhost:8081/api/updateuser/"+id, user);
 
   }

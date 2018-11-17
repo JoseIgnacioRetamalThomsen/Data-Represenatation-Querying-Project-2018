@@ -4,9 +4,9 @@ import { SessionService } from './../services/session.service'
 import { FormControl, Validators } from '@angular/forms';
 import { Router } from "@angular/router";
 import { NgForm } from "@angular/forms";
-import { Inject} from '@angular/core';
-import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
-import { MessageDialogComponent} from './../message-dialog/message-dialog.component';
+import { Inject } from '@angular/core';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { MessageDialogComponent } from './../message-dialog/message-dialog.component';
 
 @Component({
   selector: 'app-my-details',
@@ -18,103 +18,133 @@ export class MyDetailsComponent implements OnInit {
   disabled = false;
   hide = true;
 
+  //form control
+
+  email = new FormControl('', [Validators.required, Validators.email]);
+
+  //values for max/min password length
+  minPasswordLength = 1;
+  maxPasswordLength = 16;
+  //Create and add validotes to password Form Control : required,minLength, maxLength
+  password = new FormControl('', [Validators.required, Validators.minLength(this.minPasswordLength), Validators.maxLength(this.maxPasswordLength)]);
+  passwordNew = new FormControl('', [Validators.required, Validators.minLength(this.minPasswordLength), Validators.maxLength(this.maxPasswordLength)]);
+
+  wrongPassword = false;
+
+  //values for max min name lengt
+  minNameLength = 1;
+  maxNameLength = 32
+  //Create and add validotes to password Form Control : required,minLength, maxLength
+  name = new FormControl('', [Validators.required, Validators.minLength(this.minNameLength), Validators.maxLength(this.maxNameLength)]);;
+
+  //keep user data
+  user;
+
   constructor(
     private signService: SignService,
     private sessionService: SessionService,
     private router: Router,
     public dialog: MatDialog
   ) { }
-  email = new FormControl('', [Validators.required, Validators.email]);
-  user;
 
-  test = "sdd";
   ngOnInit() {
+
     //get email
     const email = this.sessionService.getEmail();
+
     //get user data using the email
     this.signService.getUserByEmail(email).subscribe((data) => {
 
+      //set user from data
       this.user = data;
+
+      //set email to email for controller
       this.email.setValue(this.user.email);
 
-    });
-  }
+      //set user name to name for controller
+      this.name.setValue(this.user.name);
 
-  openDialog(message:string,reload:boolean): void {
-    const dialogRef = this.dialog.open(MessageDialogComponent, {
-      width: '250px',
-      data: {message:message,reload:reload}
-    });
+    });//this.signService.getUserByEmail(email)
 
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
+  }//ngOnInit()
 
-      if(reload){
-        window.location.reload();
-      }
-      
-    });
-  }
+  /*
+  * Change details
+  */
+  onChangeDetails(detailsForm) {
 
-
-  getErrorMessage() {
-    return this.email.hasError('required') ? 'You must enter a value' :
-      this.email.hasError('email') ? 'Not a valid email' :
-        '';
-  }
-
-
-  onChangeDetails(detailsForm){
-    console.log(detailsForm.value.name  );
+    console.log(this.name.value);
 
     console.log(this.sessionService.getEmail());
-    //check if changes
-    if(this.email.value != this.sessionService.getEmail() || detailsForm.value.name != this.sessionService.getName()){
+
+    //check if valid and changes
+    if (this.name.valid && this.email.valid && (this.email.value != this.sessionService.getEmail() || this.name.value != this.sessionService.getName())) {
       console.log("dif");
       //update values in database 
-      this.signService.updateUserDetails(this.user._id,detailsForm.value.name,this.email.value ).subscribe(()=>{
-        
+      this.signService.updateUserDetails(this.user._id, this.name.value, this.email.value).subscribe(() => {
+        //response so update succesful
+
         //update session data
-        this.sessionService.logIn(detailsForm.value.name,this.email.value,this.user._id,);
-       
+        this.sessionService.logIn(this.name.value, this.email.value, this.user._id);
+
         //pop message to user
-        this.openDialog("Account updated!",true);
+        this.openDialog("Account updated!", true);
 
         //reload windows for reload data
-        
-        
-      });
-    }
+
+      });//this.signService.updateUserDetails(
+
+    }//if(this.email.value !...
 
   }//onChangeDetails
 
+  /*
+  *  Change password
+  */
   onChangePassword(form: NgForm) {
 
-    //use sign service for check passowrd
-    var response;
-    this.signService.login(this.user.email, form.value.oldPass).subscribe((data) => {
-      response = data;
-      //check response
-      if (response.res) {
+    //check if passwords are valid
+    if (this.passwordNew.valid && this.password.valid) {
 
-        //ready for change pasword
-        console.log("Ready to change password." + form.value.newPass);
+      var response;
+      //check if password is right
+      this.signService.login(this.user.email, this.password.value).subscribe((data) => {
+        response = data;
+        //check response
+        if (response.res) {
 
-        this.signService.updatePasswordById(this.sessionService.getId(), form.value.newPass).subscribe(() => {
+          //ready for change pasword
 
-          //update sucesfull reset form
-          form.resetForm();
-          //this.ngOnInit();
+          this.signService.updatePasswordById(this.sessionService.getId(), this.passwordNew.value).subscribe(() => {
 
-          //prompt user
-          this.openDialog("Password changed!",false);
+            //update sucesfull 
 
-        });
+            //this.ngOnInit();
 
-      }//if(response.res){
+            //prompt user
+            this.openDialog("Password changed!", false);
 
-    });//this.signService.login(
+            //reset form manually
+            this.password.setValue("");
+            this.passwordNew.setValue("");
+            this.wrongPassword = false;
 
+          });// this.signService.updatePasswordById(t
+
+        } else {
+
+          //wrong password show error message
+          this.wrongPassword = true;
+
+        }//if(response.res){
+
+      });//this.signService.login(
+
+    } else {
+
+      //password not valid control form show message so nothing to do
+
+    }
 
   }//onChangePassword
 
@@ -143,5 +173,70 @@ export class MyDetailsComponent implements OnInit {
 
   }//on delete
 
+  /*
+  * Form control methods
+  */
+
+  //email
+  getErrorMessageEmail() {
+    return this.email.hasError('required') ? 'You must enter a value' :
+      this.email.hasError('email') ? 'Not a valid email' :
+        '';
+  }//getErrorMessageEmail()
+
+  //name
+  getErrorMessageName() {
+    return this.name.hasError('required') ? 'You must enter a value' :
+
+      this.name.hasError('minlength') ? 'Min ' + this.minNameLength + ' characters long' :
+
+        this.name.hasError('maxlength') ? 'Max ' + this.maxNameLength + ' characters long' :
+
+          '';
+
+  }
+
+  //password
+  getErrorMessagePassword(oldOrNew: string) {
+    if (oldOrNew == "old") {
+      return this.passwordNew.hasError('required') ? 'You must enter a value' :
+
+        this.passwordNew.hasError('minlength') ? 'Min ' + this.minPasswordLength + ' characters long' :
+
+          this.passwordNew.hasError('maxlength') ? 'Max ' + this.maxPasswordLength + ' characters long' :
+
+            '';
+    } else {
+      return this.password.hasError('required') ? 'You must enter a value' :
+
+        this.password.hasError('minlength') ? 'Min ' + this.minPasswordLength + ' characters long' :
+
+          this.password.hasError('maxlength') ? 'Max ' + this.maxPasswordLength + ' characters long' :
+            '';
+    }//(oldOrNew == "old") 
+
+  }//getErrorMessagePassword(oldOrNew: string)
+
+
+  /*
+  * Pop Up dialog methods
+  */
+
+  openDialog(message: string, reload: boolean): void {
+    const dialogRef = this.dialog.open(MessageDialogComponent, {
+      width: '250px',
+      data: { message: message, reload: reload }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+
+      if (reload) {
+        window.location.reload();
+      }
+
+    });
+
+  }//openDialog(message:string,reload:boolean)
 
 }//MyDetailsComponent

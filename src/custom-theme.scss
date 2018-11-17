@@ -16,7 +16,7 @@ $GalwayCityTour-primary: mat-palette($mat-pink,900);
 $GalwayCityTour-accent: mat-palette($mat-pink, A200, A100, A400);
 
 // The warn palette is optional (defaults to red).
-$GalwayCityTour-warn: mat-palette($mat-blue);
+$GalwayCityTour-warn: mat-palette($mat-purple, 900);
 
 // Create the theme object (a Sass map containing all of the palettes).
 $GalwayCityTour-theme: mat-light-theme($GalwayCityTour-primary, $GalwayCityTour-accent, $GalwayCityTour-warn);
