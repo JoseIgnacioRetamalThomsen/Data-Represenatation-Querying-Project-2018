@@ -52,4 +52,18 @@ export class SignService {
     return this.http.delete("http://localhost:8081/api/user/" + id);
 
   }
+
+  updateUserDetails(id:string,name:string,email:string){
+
+    const user :User ={id:id,name:name,email:email};
+    return this.http.put("http://localhost:8081/api/updateuser/"+id, user);
+
+  }
+
+  updatePasswordById(id:string,password:string){
+    const req = {password:password};
+
+    return this.http.put("http://localhost:8081/api/updatepassword/"+id, req);
+
+  }
 }

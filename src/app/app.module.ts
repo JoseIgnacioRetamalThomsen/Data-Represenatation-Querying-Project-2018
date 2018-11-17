@@ -24,6 +24,7 @@ import { ReactiveFormsModule} from '@angular/forms';
 import { UsersSideListComponent } from './users-side-list/users-side-list.component';
 import { UserDetailsComponent } from './user-details/user-details.component';
 import { MyDetailsComponent } from './my-details/my-details.component';
+import { MessageDialogComponent } from './message-dialog/message-dialog.component';
 
 
 //actu
@@ -38,7 +39,8 @@ import { MyDetailsComponent } from './my-details/my-details.component';
     UsersSideListComponent,
     UserDetailsComponent,
     MyDetailsComponent,
-    EditCommentDialogComponent
+    EditCommentDialogComponent,
+    MessageDialogComponent
   
    
   ],
@@ -57,7 +59,8 @@ import { MyDetailsComponent } from './my-details/my-details.component';
   // ],
   entryComponents: [
     CityPlacesComponent,
-    EditCommentDialogComponent
+    EditCommentDialogComponent,
+    MessageDialogComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

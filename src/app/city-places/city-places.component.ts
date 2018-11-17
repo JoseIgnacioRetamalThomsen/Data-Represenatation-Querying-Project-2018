@@ -63,12 +63,15 @@ export class CityPlacesComponent implements OnInit {
   }//constructor
   re;
 
+  edit(commentId:string,comment:string){
+    const commentT = { commentId: commentId}
+    this.openDialog(commentId,comment);
+  }
 
-
-  openDialog(): void {
+  openDialog(commentId,comment:string): void {
     const dialogRef = this.dialog.open(EditCommentDialogComponent, {
       width: '250px',
-      data: { name: "this.name", animal: "this.animal" }
+      data: {commentId: commentId , comment:comment }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -97,7 +100,7 @@ export class CityPlacesComponent implements OnInit {
       this.place = this.places[num];
       this.getComments();
     }));
-
+    
   }
 
   comment;

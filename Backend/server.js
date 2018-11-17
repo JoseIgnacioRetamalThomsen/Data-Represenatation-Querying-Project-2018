@@ -36,6 +36,7 @@ app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     res.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, OPTIONS");
+
     next();
 });
 
@@ -64,11 +65,11 @@ app.post('/api/user', function (req, res) {
     });
     try {
         user.save(function (err1, user) {
-            console.log("hits"+user);
+            console.log("hits" + user);
             if (err1)
                 res.json({ created: false });
             else
-                res.json({ created: true ,id:user._id });
+                res.json({ created: true, id: user._id });
 
 
 
@@ -110,7 +111,7 @@ app.post('/api/login', function (req, res) {
 
         if (req.body.password == data.password) {
             console.log("yes");
-            res.json({ res: true, name: data.name, email: data.email,id: data._id });
+            res.json({ res: true, name: data.name, email: data.email, id: data._id });
         } else {
             console.log("no");
             res.json({ res: false });
@@ -184,6 +185,49 @@ app.delete("/api/user/:id", function (req, res) {
 
 });// Delete by id
 
+/*
+* Update user details using id
+*/
+app.put('/api/updateuser/:id', function (req, res) {
+
+    console.log("Update user request ffor " + req.params.id);
+
+    userModel.findByIdAndUpdate(req.params.id, { $set: req.body },
+        function (err, data) {
+            if (err) {
+                res.send(err);
+                console.log(" User update unsucesfull :" + req.params.id);
+            }
+
+            res.send(data);
+
+            console.log(" User update sucesfull :" + req.params.id);
+        });
+
+});//updateuser by id
+
+/*
+*   Update password by id
+*
+*  get id as parameter and new password in boby as {password:password}
+*/
+app.put('/api/updatepassword/:id', function (req, res) {
+
+    console.log("Update Password request from " + req.params.id);
+
+    userModel.findByIdAndUpdate(req.params.id, { $set: { password: req.body.password } },
+        function (err, data) {
+            if (err) {
+                res.send(err);
+                console.log(" Password update unsucesfull :" + req.params.id);
+            }
+
+            res.send(data);
+
+            console.log(" Password update sucesfull :" + req.params.id);
+        });
+
+});//updatae passowrd by id
 
 /*************************************************************************************************************************************
 **************************************************************************************************************************************
@@ -250,20 +294,20 @@ app.post('/api/comment', function (req, res) {
      console.log("content is " + req.body.content);
  */
 
- console.log(req.body.placeId);
-commentsModel.create({
+    console.log(req.body.placeId);
+    commentsModel.create({
         commenterName: req.body.commenterName,
         commenterId: req.body.commenterId,
         placeId: req.body.placeId,
         comment: req.body.comment
     });
 
-    res.send({created:true});
+    res.send({ created: true });
 });
 
 /*
 * Get all comments for 1 place
-*/ 
+*/
 
 app.get('/api/comments/:placeId', function (req, res) {
 
@@ -282,7 +326,7 @@ app.get('/api/comments/:placeId', function (req, res) {
 */
 app.delete("/api/comment/:id", function (req, res) {
 
-    console.log("Request to delete a comment, id: "+ req.params.id);
+    console.log("Request to delete a comment, id: " + req.params.id);
 
     commentsModel.deleteOne({ _id: req.params.id }, function (err, data) {
 
@@ -291,12 +335,14 @@ app.delete("/api/comment/:id", function (req, res) {
         }
 
         res.send(data);
-        
+
         console.log("Request to delete done.")
 
     });
 
 });// Delete by id
+
+
 
 
 /*

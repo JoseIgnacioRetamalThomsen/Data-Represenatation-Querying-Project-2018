@@ -47,7 +47,7 @@
               <mat-card-actions>
                 <button mat-raised-button>LIKE</button>
 
-                <button mat-raised-button *ngIf="comment.commenterId==userId" (click)="openDialog()">EDIT</button>
+                <button mat-raised-button *ngIf="comment.commenterId==userId" (click)="edit(comment._id,comment.comment)">EDIT</button>
                 <button mat-raised-button *ngIf="comment.commenterId==userId" (click)="onDelete(comment._id)">DELETE</button>
 
 

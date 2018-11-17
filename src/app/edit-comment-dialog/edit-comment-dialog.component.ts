@@ -9,13 +9,28 @@ import {Comment} from './../classes/Comment';
   styleUrls: ['./edit-comment-dialog.component.css']
 })
 export class EditCommentDialogComponent implements OnInit {
+   
+
+  comment;
 
   constructor(
     public dialogRef: MatDialogRef<EditCommentDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: Comment
-  ) { }
-
-  ngOnInit() {
+  ) {
+    this.comment = this.data.comment;
   }
 
+  ngOnInit() {
+    console.log("init");
+    console.log(this.data.commentId);
+    
+  }
+
+  saveChanges(){
+    console.log(this.comment);
+  }
+
+  onNoClick(): void {
+    this.dialogRef.close();
+  }
 }

@@ -5,17 +5,17 @@
 
   </mat-card-header>
 
-  <form class="EditDetailsForm" (submit)="onChangeDetails()" #postForm="ngForm">
+  <form class="EditDetailsForm" (submit)="onChangeDetails(detailsForm)" #detailsForm="ngForm" >
 
     <div class="formContainer" *ngIf=user>
 
       <mat-form-field>
-        <input matInput placeholder="user name" required [(ngModel)]="user.name" name="name" type="text">
+        <input matInput placeholder="user name" required [(ngModel)]="user.name" name="name" type="text" #name="ngModel">
 
       </mat-form-field>
 
       <mat-form-field>
-        <input matInput placeholder="Email address" required [formControl]="email" name="emailIn">
+        <input matInput placeholder="Email address" required [formControl]="email" name="emailIn" >
         <mat-error *ngIf="email.invalid">{{getErrorMessage()}}</mat-error>
       </mat-form-field>
 
@@ -33,15 +33,26 @@
 
   </mat-card-header>
 
-  <form class="changePasswordForm" (submit)="onPassword()" #postForm="ngForm">
-
+  <form class="changePasswordForm" (submit)="onChangePassword(passForm)" #passForm="ngForm" >
     <div class="formContainer" *ngIf=user>
 
+      <mat-form-field>
+        <input matInput type="text" name="oldPass" placeholder="Actual password" ngModel required minlength="1"
+          #oldPass="ngModel" [type]="hide ? 'password' : 'text'">
+        <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+
+      </mat-form-field>
+      <mat-form-field>
+          <input matInput type="text" name="newPass" placeholder="New password" ngModel required minlength="1"
+            #newPass="ngModel" [type]="hide ? 'password' : 'text'">
+          <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+  
+        </mat-form-field>
 
 
       <button mat-raised-button color="accent" type="submit">Change password</button>
-
     </div>
+
   </form>
 
 </mat-card>
@@ -53,16 +64,16 @@
 
   </mat-card-header>
 
-  <form class="deleteAccountForm" (submit)="onDelete()" #postForm="ngForm">
+  
 
     <section class="example-section">
 
-      <mat-checkbox class="example-margin" [(ngModel)]="disabled">Disabled</mat-checkbox>
+      <mat-checkbox class="example-margin" [(ngModel)]="disabled" [ngModelOptions]="{standalone: true}">Delete Account.</mat-checkbox>
 
-      <button mat-raised-button color="accent" type="submit" [disabled]="disabled">Delete your acount</button>
-    
+      <button mat-raised-button color="accent" (click)="onDelete()" [disabled]="!disabled">Delete your acount</button>
+
     </section>
-  
-  </form>
+
+ 
 
 </mat-card>
