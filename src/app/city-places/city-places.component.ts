@@ -22,20 +22,25 @@ import { Comment } from './../classes/Comment';
 })
 export class CityPlacesComponent implements OnInit {
 
-  place;//={id:"w",name:"Eire Square",description:"Galway square",photoAddress:"https://material.angular.io/assets/img/examples/shiba2.jpg"};  
-
+  //the one place showing
+  place;
+  //list of all places
   places;
+
+  //all coments list
   allCommentsPlace;
+  //each place have a number wich is the position in the list, when fist navigate the first place n the list will be show.
   placeNum = 0;
 
+  //used for decide what to show in ui
   isLogin = false;
-  userId;
 
-  commenterId;
-  commenterName;
-  commentText;
+  userId
+
+  comment;
 
   constructor(
+
     private placesService: PlacesService,
     private route: ActivatedRoute,
     private router: Router,
@@ -47,93 +52,113 @@ export class CityPlacesComponent implements OnInit {
     // force route reload whenever params change (stack overflow)
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
 
+    //load user session data
     this.isLogin = sessionService.isLogin();
     this.userId = sessionService.getId();
-    console.log("sw");
-    console.log(this.isLogin == false);
-
-
-
-    //console.log("id geted " +num);
-
-
-
-
 
   }//constructor
-  re;
-
-  edit(commentId:string,comment:string){
-    const commentT = { commentId: commentId}
-    
-    //open edit dialog with comment id and comment text
-    this.openDialog(commentId,comment);
-  }
-
-  openDialog(commentId,comment:string): void {
-    const dialogRef = this.dialog.open(EditCommentDialogComponent, {
-      width: '250px',
-      //data send to dialog
-      data: {commentId: commentId , comment:comment }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-      this.re = result;
-      console.log(result);
-    });
-  }
-
-
-  getComments() {
-    this.commentsService.getCommentsPlace(this.place._id).subscribe((data) => {
-      console.log("geting data");
-
-
-      this.allCommentsPlace = data;
-      console.log(this.allCommentsPlace);
-    });
-  }
 
   ngOnInit() {
+
+    //get route parameter
     const num = this.route.snapshot.paramMap.get('num');
+
+    //get places 
     this.placesService.getPlaces().subscribe(((data) => {
+
       this.places = data;
-      console.log(this.places);
-      console.log(data);
+
+      //set the place to show using the raoute parameter
       this.place = this.places[num];
+
+      //load comments
       this.getComments();
-    }));
-    
-  }
 
-  comment;
+    }));//this.placesService.getPlaces()
 
-  onAddPost(form: NgForm) {
-    const num = this.route.snapshot.paramMap.get('num');
-    console.log("working " + this.comment);
-    console.log(this.place._id);
+  }// ngOnInit()
 
+
+  /*
+  * Load all coments from commets services to allComentsPlace 
+  */
+  getComments() {
+
+    this.commentsService.getCommentsPlace(this.place._id).subscribe((data) => {
+
+      this.allCommentsPlace = data;
+
+    });
+
+  }//getComments()
+
+
+  /*
+  * Add new post to database "posts", using session data and the entered comment
+  */
+  onAddCooment(form: NgForm) {
+
+    //suscribe to add comment in comments service
     this.commentsService.addComment(this.sessionService.getName(), this.sessionService.getId(), this.place._id, this.comment).subscribe(() => {
 
-      console.log("rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
+      //respose so commet was added
+
+      //reset form
       form.reset();
+
+      //reload page
       this.ngOnInit();
+      //this.getComments();
 
     });
 
   }//onAddPost(form:NgForm){
 
+
+  /*
+  * Delete a post , user must be logged in for do it , comment is deleted using comment id
+  */
   onDelete(id: string) {
 
     this.commentsService.deletecommentId(id).subscribe((data) => {
+
       //id delete reset
-      console.log(data);
       if (data.n == 1) {
-        this.ngOnInit();
+
+        //reload comments
+        this.getComments();
       }
+
     });
-    console.log(id);
+
   }//onDelete(id:string){
-}
+
+  /*
+  *Edit comment : open pop up dialog wich return true if changes made in the comment, then
+  *reload comments if changes.
+  */
+  editCommentDialog(commentId, comment: string): void {
+    const dialogRef = this.dialog.open(EditCommentDialogComponent, {
+      width: '250px',
+
+      //data send to dialog
+      data: { commentId: commentId, comment: comment }
+      
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+
+      //check result for reload if change happens
+      if (result) {
+
+        //reload comments
+        this.getComments();
+
+      }
+
+    });//dialogRef.afterClosed().subscribe(result
+
+  }//editCommentDialog(
+
+}//CityPlacesComponent
 

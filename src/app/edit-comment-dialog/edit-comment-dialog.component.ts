@@ -32,17 +32,16 @@ export class EditCommentDialogComponent implements OnInit {
     console.log(this.comment);
     this.commentsService.editComment(this.data.commentId,this.comment).subscribe(()=>{
       
-      //close dialog wiht true response
+      //close dialog wiht true response, change made
       this.dialogRef.close("true");
     });
   }
 
 
   onNoClick(): void {
-    this.dialogRef.close();
+    //close dialog with false response; no changes made
+    this.dialogRef.close("false");
   }
 
-  afterClosed():void{
-    console.log("was close");
-  }
+  
 }

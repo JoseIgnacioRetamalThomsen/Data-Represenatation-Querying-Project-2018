@@ -15,15 +15,6 @@ mongoose.connect(mongoDB);
 
 var Schema = mongoose.Schema;
 
-var userSchema = new Schema({
-    email: { type: String, unique: true },
-    password: String,
-    name: String
-});
-//conver schema to model
-var userModel = mongoose.model("users", userSchema);
-
-
 
 
 //Here we are configuring express to use body-parser as middle-ware. 
@@ -47,8 +38,15 @@ app.use(function (req, res, next) {
 **************************************************************************************************************************************
 **************************************************************************************************************************************
 *************************************************************************************************************************************/
+ //user schema
+var userSchema = new Schema({
+    email: { type: String, unique: true },
+    password: String,
+    name: String
+});
 
-
+//user mdodel using schame
+var userModel = mongoose.model("users", userSchema);
 
 /*
 * Create new User
@@ -63,40 +61,20 @@ app.post('/api/user', function (req, res) {
         email: req.body.email,
         password: req.body.password, name: req.body.name
     });
+
     try {
         user.save(function (err1, user) {
+
             console.log("hits" + user);
             if (err1)
                 res.json({ created: false });
             else
                 res.json({ created: true, id: user._id });
 
-
-
-
         });
     } catch (error) { }
 
-
-
-
 });
-
-// res.json({created:false});
-/*
-    user.save(function (err, user) {
-        if (err) return console.error(err);
-      
-      });
-      */
-/*
-    userModel.create({
-        email: req.body.email,
-        password: req.body.password,
-        name : req.body.name,
-    });
-*/
-
 
 /*
 * Check login
@@ -285,10 +263,11 @@ app.get('/api/places', function (req, res) {
             res.send(err);
         }
 
-        console.log(data);
         res.json(data);
         console.log("All places request sent back.")
+
     });
+
 });
 
 /*************************************************************************************************************************************
@@ -313,20 +292,30 @@ var commentsModel = mongoose.model("comments", commentsSchema);
 */
 
 app.post('/api/comment', function (req, res) {
-    /* console.log("Title is " + req.body.title);
-     console.log("content is " + req.body.content);
- */
 
-    console.log(req.body.placeId);
+    console.log("new to comment for : " + req.body.placeId);
+
+    //create new comment
     commentsModel.create({
         commenterName: req.body.commenterName,
         commenterId: req.body.commenterId,
         placeId: req.body.placeId,
         comment: req.body.comment
-    });
 
-    res.send({ created: true });
-});
+    }, function (err) {
+        //if err send error back
+        if (err) {
+            res.send(err);
+        }
+
+        //send positive response after create comment in db
+        res.send({ created: true });
+
+    });//commentsModel.create({
+
+
+
+});//app.post('/api/comment'
 
 /*
 * Get all comments for 1 place
@@ -334,13 +323,22 @@ app.post('/api/comment', function (req, res) {
 
 app.get('/api/comments/:placeId', function (req, res) {
 
-    console.log("places = " + req.params.placeId);
+    console.log("Comments requested for = " + req.params.placeId);
 
+    //find all commets using id
     commentsModel.find({ placeId: req.params.placeId }, '-password', function (err, data) {
-        console.log(data);
+
+         //if err send error back
+        if (err) {
+            res.send(err);
+        }
+
+        //send data back
         res.json(data);
 
-    });
+        console.log("Comments requested done = " + req.params.placeId);
+
+    });// commentsModel.find({ placeId:
 
 });//Get one user by email
 
@@ -351,12 +349,15 @@ app.delete("/api/comment/:id", function (req, res) {
 
     console.log("Request to delete a comment, id: " + req.params.id);
 
+    //delete comment using id
     commentsModel.deleteOne({ _id: req.params.id }, function (err, data) {
 
+         //if err send error back
         if (err) {
             res.send(err);
         }
 
+        //commet was deleted, send response
         res.send(data);
 
         console.log("Request to delete done.")
@@ -391,67 +392,6 @@ app.put('/api/updatecomment/:id', function (req, res) {
 
 });//updatae passowrd by id
 
-
-/*
-app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-});
-
-app.get('/api/posts', function (req, res) {
-
-    PostModel.find(function (err, data) {
-        if (err)
-            res.send(err);
-
-        res.json(data);
-    });
-    //http://localhost:8081/api/posts
-    // res.status(200).json({ posts: posts })
-
-});
-
-
-
-
-app.post('/api/posts', function (req, res) {
-    console.log("Title is " + req.body.title);
-    console.log("content is " + req.body.content);
-
-
-    PostModel.create({
-        title: req.body.title,
-        content: req.body.content
-    })
-
-});
-
-//read just one file
-app.get('/getposts/:title', function (req, res) {
-    console.log("Get " + req.params.title + " Post");
-    PostModel.findOne({ 'title': req.params.title }, function (err, data) {
-        if (err)
-            return handleError(err);
-
-        console.log(data);
-        res.json(data);
-    });
-});
-
-//read by id
-app.get('/getpostsid/:id', function (req, res) {
-    var id = req.params.id;
-    console.log(id);
-    PostModel.findById(id, function (err, data) {
-        if (err)
-            return handleError(err);
-        console.log(data);
-        res.json(data);
-    });
-});
-
-*/
 /********************** ---------------------------------------------------
 */
 var server = app.listen(8081, function () {

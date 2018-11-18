@@ -44,14 +44,16 @@
 
       <mat-form-field>
 
-        <input matInput type="text" name="oldPass" placeholder="Actual password" required minlength="1"
-        [formControl]="password" [type]="hide ? 'password' : 'text'">
+        <input matInput type="text" name="oldPass" placeholder="Actual password" required [formControl]="password"
+          [type]="hide ? 'password' : 'text'">
         <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
         <mat-error *ngIf="password.invalid">{{getErrorMessagePassword("old")}}</mat-error>
 
       </mat-form-field>
+
       <mat-form-field>
-        <input matInput type="text" name="newPass" placeholder="New password" required minlength="1" [formControl]="passwordNew"
+
+        <input matInput type="text" name="newPass" placeholder="New password" required [formControl]="passwordNew"
           [type]="hide ? 'password' : 'text'">
         <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
         <mat-error *ngIf="password.invalid">{{getErrorMessagePassword("new")}}</mat-error>
@@ -61,11 +63,13 @@
       <mat-error *ngIf="wrongPassword">Wrong password</mat-error>
 
       <button mat-raised-button color="accent" type="submit">Change password</button>
+
     </div>
 
   </form>
 
 </mat-card>
+
 <mat-card class="delete-acount-card">
 
   <mat-card-header>
@@ -74,8 +78,6 @@
 
   </mat-card-header>
 
-
-
   <section class="example-section">
 
     <mat-checkbox class="example-margin" [(ngModel)]="disabled" [ngModelOptions]="{standalone: true}">Delete my account</mat-checkbox>
@@ -83,7 +85,5 @@
     <button mat-raised-button color="accent" (click)="onDelete()" [disabled]="!disabled">DELETE MY ACCOUNT</button>
 
   </section>
-
-
 
 </mat-card>

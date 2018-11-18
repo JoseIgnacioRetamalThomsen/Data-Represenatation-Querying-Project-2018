@@ -1,15 +1,22 @@
-<div *ngIf='isLoad'>
+<div *ngIf='users'>
+
   <mat-list>
+
     <mat-list-item *ngFor="let user of users" (click)="onUserClick()" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
 
       <a mat-list-item routerLink="/detail/{{user._id}}" class="link">
+
         <img matListAvatar src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="...">
         <h4 mat-line>{{user.name}}</h4>
 
       </a>
+
       <mat-divider></mat-divider>
+
     </mat-list-item>
+
   </mat-list>
+
 </div>
 
 

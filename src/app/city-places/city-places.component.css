@@ -1,4 +1,4 @@
-
+@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
    
 
     
@@ -22,4 +22,14 @@ align-content: center;
   }
   .button{
     max-width: 100px;
+  }
+  .comment-card{
+    max-width: 600px;
+    margin-top: 7px;
+  }
+  .commets-accordion{
+   
+  }
+  .placesCard{
+    padding-top: 7px;
   }

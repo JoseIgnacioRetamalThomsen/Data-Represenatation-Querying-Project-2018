@@ -1,0 +1,9 @@
+@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+.comment-text{
+    min-height: 200px;
+    min-width:  200px;
+}
+
+.comment-container{
+    height: 100%;
+}

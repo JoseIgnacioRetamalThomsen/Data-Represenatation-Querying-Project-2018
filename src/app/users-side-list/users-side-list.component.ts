@@ -8,28 +8,35 @@ import {SignService} from '../services/sign.service';
 })
 export class UsersSideListComponent implements OnInit {
 
-  users;// = [{name:"Hd"},{name:"d"}];
-  isLoad = false;
+  //list of users with only basic data (name, id)
+  users;
+    
   constructor(private httpService : SignService) { }
 
   ngOnInit() {
 
+    //get user data
     this.httpService.getUserBasic().subscribe((data) =>{
    
-      this.users = data;
-      console.log(this.users[0]._id);
-    this.isLoad = true;
-
+    this.users = data;
+        
     });
-  }
 
+  }//ngOnInit() 
+
+  /*
+  * Mouse event on each user for future develop 
+  */
   onUserClick(){
     console.log("working");
   }
+
   onMouseEnter(){
     console.log("working");
   }
+
   onMouseLeave(){
     console.log("working leave");
   }
-}
+
+}//UsersSideListComponent
