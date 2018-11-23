@@ -9,7 +9,7 @@ var mongoose = require("mongoose");
 
 var mongoDB = "mongodb://admin:admin1@ds251223.mlab.com:51223/galwaycitytour"
 
-mongoose.connect(mongoDB);
+mongoose.connect(mongoDB, { promiseLibrary: require('bluebird') });
 
 //hot todata Schema
 
@@ -21,11 +21,26 @@ var Schema = mongoose.Schema;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+
+var JwtStrategy = require('passport-jwt').Strategy,
+    ExtractJwt = require('passport-jwt').ExtractJwt;
+
+
+ var jwt = require('jsonwebtoken');
+// load up the user model
+
+
+
+
+
+
+
 /********************** ---------------------------------------------------
 */
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept,,AUTHORIZATION");
     res.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, OPTIONS");
 
     next();
@@ -38,15 +53,76 @@ app.use(function (req, res, next) {
 **************************************************************************************************************************************
 **************************************************************************************************************************************
 *************************************************************************************************************************************/
- //user schema
+//user schema
 var userSchema = new Schema({
-    email: { type: String, unique: true },
-    password: String,
+    email: { type: String, unique: true, required: true },
+    password: { type: String, required: true },
     name: String
 });
 
-//user mdodel using schame
+userSchema.pre('save', function (next) {
+    var user = this;
+    if (this.isModified('password') || this.isNew) {
+        bcrypt.genSalt(10, function (err, salt) {
+            if (err) {
+                return next(err);
+            }
+            bcrypt.hash(user.password, salt, null, function (err, hash) {
+                if (err) {
+                    return next(err);
+                }
+                user.password = hash;
+                next();
+            });
+        });
+    } else {
+        return next();
+    }
+});
+
+userSchema.methods.comparePassword = function (passw, cb) {
+    bcrypt.compare(passw, this.password, function (err, isMatch) {
+        if (err) {
+            return cb(err);
+        }
+        cb(null, isMatch);
+    });
+};
 var userModel = mongoose.model("users", userSchema);
+
+var bcrypt = require('bcrypt-nodejs');
+var jwt = require('jsonwebtoken');
+
+var secret = 'meansecure'; // get db config file
+var passport = require('passport');
+
+module.exports = function (passport) {
+    var opts = {};
+    opts.jwtFromRequest = ExtractJwt.fromAuthHeaderWithScheme("jwt");
+    opts.secretOrKey = secret;
+    passport.use(new JwtStrategy(opts, function (jwt_payload, done) {
+        userModel.findOne({ id: jwt_payload.id }, function (err, user) {
+            if (err) {
+                return done(err, false);
+            }
+            if (user) {
+                done(null, user);
+            } else {
+                done(null, false);
+            }
+        });
+    }));
+}(passport);
+
+
+app.use(passport.initialize());
+
+
+
+
+
+//user mdodel using schame
+
 
 /*
 * Create new User
@@ -75,6 +151,30 @@ app.post('/api/user', function (req, res) {
     } catch (error) { }
 
 });
+app.post('/api/signup', function (req, res) {
+    console.log("xall");
+    if (!req.body.email || !req.body.password) {
+        res.json({ created: false, msg: 'Please pass username and password.' });
+    } else {
+        var newUser = new userModel({
+            email: req.body.email,
+            password: req.body.password, 
+            name: req.body.name
+        });
+        // save the user
+        newUser.save(function (err,user) {
+            if (err) {
+                console.log(err);
+                return res.json({ created: false, msg: 'Username already exists.' });
+            }
+
+            //create token
+            var token = jwt.sign(user.toJSON(), secret);
+            res.json({ created: true, token: 'JWT ' + token, id: user._id });
+        });
+    }
+});
+
 
 /*
 * Check login
@@ -121,6 +221,35 @@ app.post('/api/login', function (req, res) {
     });
 
 });//check login
+
+app.post('/signin', function(req, res) {
+
+    console.log("mk");
+
+    userModel.findOne({
+      email: req.body.email
+    }, function(err, user) {
+      if (err) throw err;
+  
+      if (!user) {
+        res.status(401).send({success: false, msg: 'Authentication failed. User not found.'});
+      } else {
+        // check if password matches
+        user.comparePassword(req.body.password, function (err, isMatch) {
+          if (isMatch && !err) {
+            // if user is found and password is right create a token
+            var token = jwt.sign(user.toJSON(), secret);
+            // return the information including token as JSON
+            res.json({success: true, token: 'JWT ' + token,name: user.name, user: user.email, user: user._id });
+          } else {
+            res.status(401).send({success: false, msg: 'Authentication failed. Wrong password.'});
+          }
+        });
+      }
+    });
+  });
+
+
 
 /*
 * Get all user name
@@ -185,6 +314,35 @@ app.delete("/api/user/:id", function (req, res) {
     })
 
 });// Delete by id
+
+getToken = function (headers) {
+    if (headers && headers.authorization) {
+      var parted = headers.authorization.split(' ');
+      if (parted.length === 2) {
+        return parted[1];
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  };
+
+app.delete('/api/user1/:id', passport.authenticate('jwt', { session: false}), function(req, res) {
+    console.log("caLLDFAmnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnS");
+    var token = getToken(req.headers);
+    if (token) {
+        userModel.deleteOne({ _id: req.params.id }, function (err, data) {
+           
+            if (err) return next(err);
+            
+            res.send(data);
+        })
+    } else {
+      return res.status(403).send({success: false, msg: 'Unauthorized.'});
+    }
+  });
+
 
 /*
 * Update comment using id
@@ -257,22 +415,22 @@ app.get('/api/places', function (req, res) {
 
     console.log("All places requested.")
 
-    setTimeout(function(){
+    setTimeout(function () {
 
         placesModel.find({}, function (err, data) {
 
             if (err) {
                 res.send(err);
             }
-    
-           
+
+
             res.json(data);
             console.log("All places request sent back.")
-    
+
         });
     }, 4000);
 
-  
+
 
 });
 
@@ -334,7 +492,7 @@ app.get('/api/comments/:placeId', function (req, res) {
     //find all commets using id
     commentsModel.find({ placeId: req.params.placeId }, '-password', function (err, data) {
 
-         //if err send error back
+        //if err send error back
         if (err) {
             res.send(err);
         }
@@ -358,7 +516,7 @@ app.delete("/api/comment/:id", function (req, res) {
     //delete comment using id
     commentsModel.deleteOne({ _id: req.params.id }, function (err, data) {
 
-         //if err send error back
+        //if err send error back
         if (err) {
             res.send(err);
         }
@@ -409,7 +567,7 @@ app.put('/api/updatecomment/:id', function (req, res) {
 app.get('/api/search/:s', function (req, res) {
 
     console.log("Search for  = " + req.params.s);
-    var str = "/"+req.params.s+"/";
+    var str = "/" + req.params.s + "/";
     //user
     /*
     userModel.find({ name:  req.params.s}, "", function (err, data) {

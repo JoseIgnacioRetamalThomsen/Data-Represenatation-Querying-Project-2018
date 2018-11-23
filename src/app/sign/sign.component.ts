@@ -39,8 +39,8 @@ export class SignComponent implements OnInit {
 
 
   wrongDataMessage = false;
-  emailInUseMessage = false;
-
+  emailInUseMessage = true;
+  signUpErrorMessage =""
   constructor(
     private signService: SignService,
     private router: Router,
@@ -67,16 +67,18 @@ export class SignComponent implements OnInit {
 
     //check if email/password valid
     if (this.email.valid && this.password.valid) {
-
+     
       this.signService.login(this.email.value.toUpperCase(), this.password.value).subscribe(data => {
+       console.log(data);
         response = data;
-        console.log("res7" + response.res);
+        console.log("res7")
+        console.log( data);
 
-        if (response.res) {
+        if (response.success) {
           //login successfull
 
           //log in in session (local storate)
-          this.session.logIn(response.name, this.email.value, response.id);
+          this.session.logIn(response.name, this.email.value, response.id,response.token);
 
           //navigate to home page
           this.router.navigate(['home']);
@@ -104,40 +106,38 @@ export class SignComponent implements OnInit {
 
     var temp;
 
-
     if (this.email.valid && this.password.valid && this.name.valid) {
 
       //create user, email to upper case
       this.signService.addUser(this.email.value.toUpperCase(), this.password.value, this.name.value).subscribe(data => {
         //get data into temp
+        console.log(data);
         temp = data;
 
         //check if create
         if (temp.created) {
           //was created
-
+          console.log(temp.token)
           //session login
-          this.session.logIn(this.name.value, this.email.value.toUpperCase(), temp.id);
+          this.session.logIn(this.name.value, this.email.value.toUpperCase(), temp.id,temp.token);
 
           //navigate to home page
-          this.router.navigate(['home']);
-
+         this.router.navigate(['home']);
+      
           //reload windows
           window.location.reload();
 
-        } else {
-          //not created mean email in use
+        }else{
 
-          //show email in use message
+          this.signUpErrorMessage = temp.msg;
           this.emailInUseMessage = true;
 
-        }// if (temp.created)
+         } 
+        });
 
-      });//this.signService.addUser(
+    } 
 
-    }//if (this.email.valid && this.password.valid && this.name.valid) 
-
-  }//onSignUp()
+  }//onSignUp end
 
   /*
   *form control methods

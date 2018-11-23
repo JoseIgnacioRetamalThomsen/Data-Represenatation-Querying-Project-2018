@@ -13,22 +13,23 @@ export class SessionService {
     }
    }
 
-  logIn(name:string,email:string,id:string){
+  logIn(name:string,email:string,id:string,token:string){
     localStorage.setItem('isLogin', "true");
     localStorage.setItem('name', name);
     localStorage.setItem('email', email);
     localStorage.setItem('id', id);
-
+    localStorage.setItem('jwtToken',token);
     console.log("logger in : " + name + " " + email);
 
 
   }
 
   logOut(){
-    localStorage.setItem('isLogin', "false");
-    localStorage.setItem('name', "");
-    localStorage.setItem('email', "");
-    localStorage.setItem('id', "");
+    localStorage.removeItem('isLogin');
+    localStorage.removeItem('name');
+    localStorage.removeItem('email');
+    localStorage.removeItem('id');
+    localStorage.removeItem('jwtToken');
   }
 
   isLogin():boolean{
@@ -44,5 +45,8 @@ export class SessionService {
   }
   getId():string{
     return localStorage.getItem('id');
+  }
+  getToken():string{
+    return localStorage.getItem('jwtToken');
   }
 }

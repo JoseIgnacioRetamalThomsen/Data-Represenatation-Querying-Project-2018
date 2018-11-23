@@ -90,7 +90,7 @@
 
         </div>
 
-        <mat-error *ngIf="emailInUseMessage">That email is already in use</mat-error>
+        <mat-error *ngIf="emailInUseMessage">{{signUpErrorMessage}}</mat-error>
         <button mat-raised-button color="accent" type="submit">Sign Up</button>
 
       </form>

@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from '../classes/User';
+import {SessionService} from './session.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,13 +11,16 @@ export class SignService {
 
 
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private sessionService:SessionService
+    ) { }
 
   addUser(email: string, password: string, name: string) {
 
     const user: User = { email: email.toUpperCase(), password: password, name: name };
 
-    return this.http.post("http://localhost:8081/api/user", user);
+    return this.http.post("http://localhost:8081/api/signup", user);
 
   }
 
@@ -24,7 +28,7 @@ export class SignService {
 
     const user: User = { email: email.toUpperCase(), password: password, name };
 
-    return this.http.post("http://localhost:8081/api/login", user);
+    return this.http.post("http://localhost:8081/signin", user);
 
   }
 
@@ -49,7 +53,12 @@ export class SignService {
 
   deleteUserById(id: string): Observable<any> {
 
-    return this.http.delete("http://localhost:8081/api/user/" + id);
+    console.log(this.sessionService.getToken());
+    let httpOptions = {
+      headers: new HttpHeaders({ 'Authorization': this.sessionService.getToken()})
+    };
+    
+    return this.http.delete("http://localhost:8081/api/user1/" + id, httpOptions);
 
   }
 
