@@ -1,8 +1,9 @@
-<div class="main" *ngIf="place">
+<div class="main" *ngIf="place!=null">
 
   <div class="left">
 
     <mat-list *ngFor="let place of places; let i = index">
+
       <a mat-list-item routerLink="/places/{{i}}"> {{place.name}} </a>
 
     </mat-list>
@@ -80,7 +81,10 @@
           <div class="comment-form">
 
             <mat-form-field>
-              <textarea matInput placeholder="Leave a comment" name="comment" [(ngModel)]="comment"></textarea>
+
+              <textarea matInput placeholder="Leave a comment" name="comment" [formControl]="commentControl"></textarea>
+              <mat-error *ngIf="commentControl.invalid">{{getErrorMessageComment()}}</mat-error>
+
             </mat-form-field>
 
             <button mat-raised-button color="accent" type="submit" class="button">Add</button>

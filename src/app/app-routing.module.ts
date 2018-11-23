@@ -6,6 +6,7 @@ import {HomeComponent} from './home/home.component';
 import {SignComponent} from './sign/sign.component';
 import { UserDetailsComponent } from './user-details/user-details.component';
 import { MyDetailsComponent } from './my-details/my-details.component';
+import { SearchResultComponent } from './search-result/search-result.component';
 
 
 const routes: Routes = [
@@ -15,6 +16,7 @@ const routes: Routes = [
   { path: "sign" , component : SignComponent},
   { path: 'detail/:id', component: UserDetailsComponent },
   { path: 'my', component : MyDetailsComponent } ,
+  { path : 'result/:searchFor', component : SearchResultComponent}
 ];
 
 @NgModule({

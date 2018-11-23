@@ -26,6 +26,9 @@ import { UserDetailsComponent } from './user-details/user-details.component';
 import { MyDetailsComponent } from './my-details/my-details.component';
 import { MessageDialogComponent } from './message-dialog/message-dialog.component';
 
+import {DataService} from './services/data.service';
+import { SearchResultComponent } from './search-result/search-result.component';
+
 
 //actu
 
@@ -40,7 +43,8 @@ import { MessageDialogComponent } from './message-dialog/message-dialog.componen
     UserDetailsComponent,
     MyDetailsComponent,
     EditCommentDialogComponent,
-    MessageDialogComponent
+    MessageDialogComponent,
+    SearchResultComponent
   
    
   ],
@@ -60,9 +64,17 @@ import { MessageDialogComponent } from './message-dialog/message-dialog.componen
   entryComponents: [
     CityPlacesComponent,
     EditCommentDialogComponent,
-    MessageDialogComponent
+    MessageDialogComponent,
+    
   ],
-  providers: [],
+  providers: [DataService],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule { 
+
+  constructor(
+   private dataService :DataService
+  ) { 
+ 
+  }
+}

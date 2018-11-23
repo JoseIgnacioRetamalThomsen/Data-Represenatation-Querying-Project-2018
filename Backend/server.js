@@ -257,16 +257,22 @@ app.get('/api/places', function (req, res) {
 
     console.log("All places requested.")
 
-    placesModel.find({}, function (err, data) {
+    setTimeout(function(){
 
-        if (err) {
-            res.send(err);
-        }
+        placesModel.find({}, function (err, data) {
 
-        res.json(data);
-        console.log("All places request sent back.")
+            if (err) {
+                res.send(err);
+            }
+    
+           
+            res.json(data);
+            console.log("All places request sent back.")
+    
+        });
+    }, 4000);
 
-    });
+  
 
 });
 
@@ -391,6 +397,40 @@ app.put('/api/updatecomment/:id', function (req, res) {
         });
 
 });//updatae passowrd by id
+
+/*************************************************************************************************************************************
+**************************************************************************************************************************************
+**************************************************************************************************************************************
+* Search (search.service.ts)
+**************************************************************************************************************************************
+**************************************************************************************************************************************
+*************************************************************************************************************************************/
+
+app.get('/api/search/:s', function (req, res) {
+
+    console.log("Search for  = " + req.params.s);
+    var str = "/"+req.params.s+"/";
+    //user
+    /*
+    userModel.find({ name:  req.params.s}, "", function (err, data) {
+
+        if (err) {
+            res.send(err);
+        }
+        console.log(data);
+        res.json(data);
+    });*/
+    userModel.find().where('name like Banessa').exec(function (err, data) {
+
+        if (err) {
+            res.send(err);
+        }
+        console.log(data);
+        res.json(data);
+    });
+
+});//Get one user by email
+
 
 /********************** ---------------------------------------------------
 */

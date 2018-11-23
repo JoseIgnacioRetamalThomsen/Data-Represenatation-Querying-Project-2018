@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {MatIconRegistry} from '@angular/material';
 import { User } from '../classes/User';
-
+import { FormControl, Validators } from '@angular/forms';
+import { Router } from "@angular/router";
 import {SessionService} from './../services/session.service'
 
 @Component({
@@ -17,7 +18,19 @@ export class TopBarComponent implements OnInit {
   
   user: User ={name:"pepe" ,email:"my@gmail.com"};
 
-  constructor(iconRegistry: MatIconRegistry, sanitizer: DomSanitizer,private session:SessionService) {
+
+  //serach 
+  //values for max min name lengt
+  minSearchLength = 1;
+  maxSearchLength = 32
+  //Create and add validotes to password Form Control : required,minLength, maxLength
+  commentControl = new FormControl('', [Validators.required, Validators.minLength(this.minSearchLength), Validators.maxLength(this.maxSearchLength)]);
+  searchText;
+  constructor(iconRegistry: MatIconRegistry, 
+    sanitizer: DomSanitizer,
+    private session:SessionService,
+    private router: Router,
+    ) {
 
     //icon
     iconRegistry.addSvgIcon(
@@ -31,6 +44,12 @@ export class TopBarComponent implements OnInit {
 
      console.log(this.isLoggedIn);
 
+  }
+
+  search(){
+    console.log("working" + this.searchText);
+    console.log("working" );
+    this.router.navigate(['result/'+this.searchText]);
   }
 
   ngOnInit() {

@@ -10,9 +10,11 @@ import { formArrayNameProvider } from '@angular/forms/src/directives/reactive_di
 import { Inject } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { EditCommentDialogComponent } from './../edit-comment-dialog/edit-comment-dialog.component';
+import { FormControl, Validators } from '@angular/forms';
 
 import { Comment } from './../classes/Comment';
 
+import { DataService } from './../services/data.service';
 
 @Component({
   selector: 'app-city-places',
@@ -23,7 +25,7 @@ import { Comment } from './../classes/Comment';
 export class CityPlacesComponent implements OnInit {
 
   //the one place showing
-  place;
+  place = null;
   //list of all places
   places;
 
@@ -35,9 +37,18 @@ export class CityPlacesComponent implements OnInit {
   //used for decide what to show in ui
   isLogin = false;
 
-  userId
+  userId;
 
-  comment;
+
+
+
+  //values for max min name lengt
+  mincommentLength = 1;
+  maxcommentLength = 32
+  //Create and add validotes to password Form Control : required,minLength, maxLength
+  commentControl = new FormControl('', [Validators.required, Validators.minLength(this.mincommentLength), Validators.maxLength(this.maxcommentLength)]);
+
+
 
   constructor(
 
@@ -46,7 +57,8 @@ export class CityPlacesComponent implements OnInit {
     private router: Router,
     private commentsService: CommentsService,
     private sessionService: SessionService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private dataService: DataService
 
   ) {
     // force route reload whenever params change (stack overflow)
@@ -56,25 +68,65 @@ export class CityPlacesComponent implements OnInit {
     this.isLogin = sessionService.isLogin();
     this.userId = sessionService.getId();
 
-  }//constructor
-
-  ngOnInit() {
-
-    //get route parameter
     const num = this.route.snapshot.paramMap.get('num');
 
-    //get places 
-    this.placesService.getPlaces().subscribe(((data) => {
+    //get places
+    this.places = this.dataService.getPlaces();
 
-      this.places = data;
+    //this is done for no call the server every time places page is requested or a new place is clicked.
+    //if they are null mean they are not cached in data.service so we load it
+    if (this.places == null) {
 
-      //set the place to show using the raoute parameter
+      //get services
+      this.placesService.getPlaces().subscribe(((data) => {
+
+        this.places = data;
+
+        //set the place to show using the raoute parameter
+        this.place = this.places[num];
+
+        //load comments
+        this.getComments();
+        
+        //save places in data service
+        this.dataService.setPlaces(this.places);
+
+      }));//this.placesService.getPlaces()
+
+    } else {//if not null means they are already in data.service
+
+      //set place
       this.place = this.places[num];
-
       //load comments
       this.getComments();
 
-    }));//this.placesService.getPlaces()
+    }//if (this.places == null)
+
+
+
+
+
+    /*
+        //get places 
+        this.placesService.getPlaces().subscribe(((data) => {
+    
+          this.places = data;
+    
+          //set the place to show using the raoute parameter
+          this.place = this.places[num];
+    
+          //load comments
+          this.getComments();
+    
+        }));//this.placesService.getPlaces()
+    */
+
+
+  } //constructor
+
+  ngOnInit() {
+
+    this.getComments();
 
   }// ngOnInit()
 
@@ -97,21 +149,25 @@ export class CityPlacesComponent implements OnInit {
   * Add new post to database "posts", using session data and the entered comment
   */
   onAddCooment(form: NgForm) {
+    console.log(this.commentControl.value);
 
-    //suscribe to add comment in comments service
-    this.commentsService.addComment(this.sessionService.getName(), this.sessionService.getId(), this.place._id, this.comment).subscribe(() => {
+    if (this.commentControl.valid) {
+      //suscribe to add comment in comments service
+      this.commentsService.addComment(this.sessionService.getName(), this.sessionService.getId(), this.place._id, this.commentControl.value).subscribe(() => {
 
-      //respose so commet was added
+        //respose so commet was added
 
-      //reset form
-      form.reset();
+        //reset form
+        //form.reset();
+        //this.commentControl.setValue("");
+        this.commentControl.reset();
 
-      //reload page
-      this.ngOnInit();
-      //this.getComments();
+        //reload page
+        this.ngOnInit();
+        //this.getComments();
 
-    });
-
+      });
+    }
   }//onAddPost(form:NgForm){
 
 
@@ -143,7 +199,7 @@ export class CityPlacesComponent implements OnInit {
 
       //data send to dialog
       data: { commentId: commentId, comment: comment }
-      
+
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -159,6 +215,16 @@ export class CityPlacesComponent implements OnInit {
     });//dialogRef.afterClosed().subscribe(result
 
   }//editCommentDialog(
+
+  getErrorMessageComment() {
+    return this.commentControl.hasError('required') ? 'You must enter a value' :
+
+      this.commentControl.hasError('minlength') ? 'Min ' + this.mincommentLength + ' characters long' :
+
+        this.commentControl.hasError('maxlength') ? 'Max ' + this.maxcommentLength + ' characters long' :
+
+          '';
+  }
 
 }//CityPlacesComponent
 
