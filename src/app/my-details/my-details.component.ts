@@ -85,7 +85,7 @@ export class MyDetailsComponent implements OnInit {
         //response so update succesful
 
         //update session data
-        this.sessionService.logIn(this.name.value, this.email.value, this.user._id);
+        this.sessionService.logIn(this.name.value, this.email.value, this.user._id, this.sessionService.getToken());
 
         //pop message to user
         this.openDialog("Account updated!", true);
@@ -108,19 +108,31 @@ export class MyDetailsComponent implements OnInit {
 
       var response;
       //check if password is right
-      this.signService.login(this.user.email, this.password.value).subscribe((data) => {
+      this.signService.signIn(this.user.email, this.password.value).subscribe((data) => {
         response = data;
+
+
+      }, (err) => {
+
+        //wrong password
+        this.wrongPassword = true;
+
+      }, () => {
+
         //check response
-        if (response.res) {
+        if (response.success) {
 
           //ready for change pasword
-
+          console.log(this.sessionService.getId());
           this.signService.updatePasswordById(this.sessionService.getId(), this.passwordNew.value).subscribe(() => {
 
+
+          }, (err) => {
+
+            this.wrongPassword = true;
+            
+          }, () => {
             //update sucesfull 
-
-            //this.ngOnInit();
-
             //prompt user
             this.openDialog("Password changed!", false);
 
@@ -137,7 +149,6 @@ export class MyDetailsComponent implements OnInit {
           this.wrongPassword = true;
 
         }//if(response.res){
-
       });//this.signService.login(
 
     } else {

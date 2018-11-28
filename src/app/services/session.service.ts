@@ -7,24 +7,24 @@ export class SessionService {
 
   constructor() {
 
-    console.log("Seecion constructor , login " +localStorage.getItem('isLogin') );
-    if(localStorage.getItem('isLogin')==null){
+    console.log("Seecion constructor , login " + localStorage.getItem('isLogin'));
+    if (localStorage.getItem('isLogin') == null) {
       localStorage.setItem('isLogin', "false");
     }
-   }
+  }
 
-  logIn(name:string,email:string,id:string,token:string){
+  logIn(name: string, email: string, id: string, token: string) {
     localStorage.setItem('isLogin', "true");
     localStorage.setItem('name', name);
     localStorage.setItem('email', email);
     localStorage.setItem('id', id);
-    localStorage.setItem('jwtToken',token);
+    localStorage.setItem('jwtToken', token);
     console.log("logger in : " + name + " " + email);
 
 
   }
 
-  logOut(){
+  logOut() {
     localStorage.removeItem('isLogin');
     localStorage.removeItem('name');
     localStorage.removeItem('email');
@@ -32,21 +32,21 @@ export class SessionService {
     localStorage.removeItem('jwtToken');
   }
 
-  isLogin():boolean{
-    if(localStorage.getItem('isLogin')=="false")
+  isLogin(): boolean {
+    if (localStorage.getItem('isLogin') == "false")
       return false;
     return true;
   }
-  getName():string{
+  getName(): string {
     return localStorage.getItem('name');
   }
-  getEmail():string{
+  getEmail(): string {
     return localStorage.getItem('email').toUpperCase();
   }
-  getId():string{
+  getId(): string {
     return localStorage.getItem('id');
   }
-  getToken():string{
+  getToken(): string {
     return localStorage.getItem('jwtToken');
   }
 }

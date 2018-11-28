@@ -1,11 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-import { NgForm } from "@angular/forms";
-import { User } from './../classes/User';
 import { SignService } from '../services/sign.service'
 import { Router } from "@angular/router";
 import { SessionService } from './../services/session.service'
-import { formArrayNameProvider } from '@angular/forms/src/directives/reactive_directives/form_group_name';
 
 @Component({
   selector: 'app-sign',
@@ -14,14 +11,7 @@ import { formArrayNameProvider } from '@angular/forms/src/directives/reactive_di
 })
 export class SignComponent implements OnInit {
 
-  // emailIn;
-  //nameIn;
-
-  //password 
-
   hide = true;
-
-  //isUnchanged = true;
 
   //form controls/validator
   //Create and add validotes to password Form Control : required,email
@@ -37,48 +27,92 @@ export class SignComponent implements OnInit {
   //Create and add validotes to password Form Control : required,minLength, maxLength
   name = new FormControl('', [Validators.required, Validators.minLength(this.minNameLength), Validators.maxLength(this.maxNameLength)]);
 
-
   wrongDataMessage = false;
   emailInUseMessage = true;
-  signUpErrorMessage =""
+  signUpErrorMessage = ""
+
   constructor(
     private signService: SignService,
     private router: Router,
     private session: SessionService
   ) { }
 
-  ngOnInit() {
-
-  }
+  ngOnInit() { }
 
   /*
-  * Sign in/ sign out methods, calls from form
+  * Sign up
   */
+  onSignUp(): void {
+
+    var temp;
+
+    if (this.email.valid && this.password.valid && this.name.valid) {
+
+      //create user, email to upper case
+      this.signService.signUp(this.email.value.toUpperCase(), this.password.value, this.name.value).subscribe(data => {
+
+        //get data into temp
+        temp = data;
+
+      }, (err) => {
+
+        this.emailInUseMessage = true;
+        //console.log(err);
+
+      }, () => {
+        //done
+        //check if create
+        if (temp.success) {
+
+          console.log(temp.token)
+          //session login
+          this.session.logIn(this.name.value, this.email.value.toUpperCase(), temp.id, temp.token);
+
+          //navigate to home page
+          this.router.navigate(['home']);
+
+          //reload windows
+          window.location.reload();
+
+        } else {
+
+          this.signUpErrorMessage = temp.msg;
+          this.emailInUseMessage = true;
+
+        }
+
+      });
+
+    }
+
+  }//onSignUp end
 
   /*
   * Sign in
   */
-  onSignIn():void {
+  onSignIn(): void {
 
-    console.log("s:" + this.email.value.toUpperCase());
-    console.log("s:" + this.password.value);
-    //temporal for hold data
     var response;
 
     //check if email/password valid
     if (this.email.valid && this.password.valid) {
-     
-      this.signService.login(this.email.value.toUpperCase(), this.password.value).subscribe(data => {
-       console.log(data);
+
+      this.signService.signIn(this.email.value.toUpperCase(), this.password.value).subscribe(data => {
+
         response = data;
-        console.log("res7")
-        console.log( data);
+
+      }, (err) => {
+
+        this.wrongDataMessage = true;
+        //console.log(err);
+
+      }, () => {
 
         if (response.success) {
           //login successfull
 
           //log in in session (local storate)
-          this.session.logIn(response.name, this.email.value, response.id,response.token);
+          this.session.logIn(response.name, this.email.value, response.id, response.token);
 
           //navigate to home page
           this.router.navigate(['home']);
@@ -91,7 +125,7 @@ export class SignComponent implements OnInit {
           //show wrong data message
           this.wrongDataMessage = true;
 
-        }//(response.res)
+        }//(response.success)
 
       });//this.signService.login(
 
@@ -99,45 +133,7 @@ export class SignComponent implements OnInit {
 
   }//onSignIn()
 
-  /*
-  * Sign out
-  */
-  onSignUp():void {
 
-    var temp;
-
-    if (this.email.valid && this.password.valid && this.name.valid) {
-
-      //create user, email to upper case
-      this.signService.addUser(this.email.value.toUpperCase(), this.password.value, this.name.value).subscribe(data => {
-        //get data into temp
-        console.log(data);
-        temp = data;
-
-        //check if create
-        if (temp.created) {
-          //was created
-          console.log(temp.token)
-          //session login
-          this.session.logIn(this.name.value, this.email.value.toUpperCase(), temp.id,temp.token);
-
-          //navigate to home page
-         this.router.navigate(['home']);
-      
-          //reload windows
-          window.location.reload();
-
-        }else{
-
-          this.signUpErrorMessage = temp.msg;
-          this.emailInUseMessage = true;
-
-         } 
-        });
-
-    } 
-
-  }//onSignUp end
 
   /*
   *form control methods

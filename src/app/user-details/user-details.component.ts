@@ -10,15 +10,17 @@ import { User } from '../classes/User';
   styleUrls: ['./user-details.component.css']
 })
 export class UserDetailsComponent implements OnInit {
+
+  user;
+  found =true;
   
-  user ;
-  id1;
+  //id1;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private signService: SignService
-    ) {
+  ) {
 
     // force route reload whenever params change (stack overflow)
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
@@ -32,16 +34,22 @@ export class UserDetailsComponent implements OnInit {
   getUser() {
     const id = this.route.snapshot.paramMap.get('id');
 
-    this.signService.getUserById(id).subscribe((userData) =>{
+    this.signService.getUserById(id).subscribe((userData) => {
+      console.log("ere");
+      console.log(userData);
+      this.user = userData;
 
-      this.user =userData;
-      console.log(this.user.name);
-     
-    });
-    this.id1=id;
-    
+
+    }, (err) => {
+      
+      console.log(err);
+      this.found = false;
+      
+  });
+
+
+    //this.id1=id;
+
   }
-  ngOnChanges() {
-    console.log(this.route.snapshot.paramMap.get('id'));
-  }
+
 }

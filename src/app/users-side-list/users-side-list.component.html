@@ -18,7 +18,9 @@
   </mat-list>
 
 </div>
-
+<div *ngIf="!users">
+  <h4>Connection promblem try again later.</h4>
+</div>
 
 <!--<img matListAvatar src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="...">
    <mat-icon mat-list-icon>face</mat-icon>

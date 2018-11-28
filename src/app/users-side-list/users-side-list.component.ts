@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {SignService} from '../services/sign.service';
+import { SignService } from '../services/sign.service';
 
 @Component({
   selector: 'app-users-side-list',
@@ -10,33 +10,38 @@ export class UsersSideListComponent implements OnInit {
 
   //list of users with only basic data (name, id)
   users;
-    
-  constructor(private httpService : SignService) { }
+
+  constructor(private httpService: SignService) { }
 
   ngOnInit() {
 
-    //get user data
-    this.httpService.getUserBasic().subscribe((data) =>{
-   
-    this.users = data;
-        
-    });
+    //get user names and id
+    this.httpService.getUsersName().subscribe((data) => {
+
+      this.users = data;
+
+    }, (err) => {
+      
+      console.log(err);
+      
+      
+  });
 
   }//ngOnInit() 
 
   /*
   * Mouse event on each user for future develop 
   */
-  onUserClick(){
-    console.log("working");
+  onUserClick() {
+    //console.log("working");
   }
 
-  onMouseEnter(){
-    console.log("working");
+  onMouseEnter() {
+    //console.log("working");
   }
 
-  onMouseLeave(){
-    console.log("working leave");
+  onMouseLeave() {
+    //console.log("working leave");
   }
 
 }//UsersSideListComponent
