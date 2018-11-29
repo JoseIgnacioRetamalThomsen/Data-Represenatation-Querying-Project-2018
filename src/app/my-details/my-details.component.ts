@@ -109,8 +109,8 @@ export class MyDetailsComponent implements OnInit {
       var response;
       //check if password is right
       this.signService.signIn(this.user.email, this.password.value).subscribe((data) => {
-        response = data;
 
+        response = data;
 
       }, (err) => {
 
@@ -121,27 +121,8 @@ export class MyDetailsComponent implements OnInit {
 
         //check response
         if (response.success) {
-
-          //ready for change pasword
-          console.log(this.sessionService.getId());
-          this.signService.updatePasswordById(this.sessionService.getId(), this.passwordNew.value).subscribe(() => {
-
-
-          }, (err) => {
-
-            this.wrongPassword = true;
-            
-          }, () => {
-            //update sucesfull 
-            //prompt user
-            this.openDialog("Password changed!", false);
-
-            //reset form manually
-            this.password.setValue("");
-            this.passwordNew.setValue("");
-            this.wrongPassword = false;
-
-          });// this.signService.updatePasswordById(t
+           
+          this.upDatePassword();
 
         } else {
 
@@ -149,6 +130,7 @@ export class MyDetailsComponent implements OnInit {
           this.wrongPassword = true;
 
         }//if(response.res){
+
       });//this.signService.login(
 
     } else {
@@ -158,6 +140,29 @@ export class MyDetailsComponent implements OnInit {
     }
 
   }//onChangePassword
+
+  private upDatePassword() {
+    //ready for change pasword
+
+    this.signService.updatePasswordById(this.sessionService.getId(), this.passwordNew.value).subscribe(() => {
+
+    }, (err) => {
+
+      this.wrongPassword = true;
+
+    }, () => {
+
+      //update sucesfull 
+      //prompt user
+      this.openDialog("Password changed!", false);
+
+      //reset form manually
+      this.password.setValue("");
+      this.passwordNew.setValue("");
+      this.wrongPassword = false;
+
+    });// this.signService.updatePasswordById(t
+  }
 
   /*
   * Delete Account
