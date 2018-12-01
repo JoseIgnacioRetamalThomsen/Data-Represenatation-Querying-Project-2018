@@ -3,6 +3,8 @@ import { FormControl, Validators } from '@angular/forms';
 import { SignService } from '../services/sign.service'
 import { Router } from "@angular/router";
 import { SessionService } from './../services/session.service'
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { EOVERFLOW } from 'constants';
 
 @Component({
   selector: 'app-sign',
@@ -17,7 +19,7 @@ export class SignComponent implements OnInit {
   //Create and add validotes to password Form Control : required,email
   email = new FormControl('', [Validators.required, Validators.email]);
   //values for max/min password length
-  minPasswordLength = 1;
+  minPasswordLength = 3;
   maxPasswordLength = 16;
   //Create and add validotes to password Form Control : required,minLength, maxLength
   password = new FormControl('', [Validators.required, Validators.minLength(this.minPasswordLength), Validators.maxLength(this.maxPasswordLength)]);
@@ -29,7 +31,8 @@ export class SignComponent implements OnInit {
 
   wrongDataMessage = false;
   emailInUseMessage = true;
-  signUpErrorMessage = ""
+  signinErrorMessage = "";
+  signUpErrorMessage = "";
 
   constructor(
     private signService: SignService,
@@ -49,22 +52,38 @@ export class SignComponent implements OnInit {
     if (this.email.valid && this.password.valid && this.name.valid) {
 
       //create user, email to upper case
-      this.signService.signUp(this.email.value.toUpperCase(), this.password.value, this.name.value).subscribe(data => {
+      this.signService.signUp(this.email.value.toUpperCase(), this.password.value, this.name.value).subscribe((data) => {
 
         //get data into temp
         temp = data;
 
-      }, (err) => {
 
-        this.emailInUseMessage = true;
-        //console.log(err);
+      }, error => {
 
+
+        if (error.status == 400) {
+
+
+          this.emailInUseMessage = true;
+          this.signUpErrorMessage = error.error;
+
+
+        } else if (error.status == 500) {
+
+          this.emailInUseMessage = true;
+          this.signUpErrorMessage = error.error;
+
+        } else if (error.status == 0) {
+
+          this.emailInUseMessage = true;
+          this.signUpErrorMessage = "Can't connect to server, please try again later.";
+
+        }
       }, () => {
         //done
         //check if create
         if (temp.success) {
 
-          console.log(temp.token)
           //session login
           this.session.logIn(this.name.value, this.email.value.toUpperCase(), temp.id, temp.token);
 
@@ -102,9 +121,16 @@ export class SignComponent implements OnInit {
         response = data;
 
       }, (err) => {
+        if (err.status == 401) {
 
-        this.wrongDataMessage = true;
-        //console.log(err);
+          this.wrongDataMessage = true;
+          this.signinErrorMessage = "You've entered an incorrect username/password.";
+
+        } else if (err.status == 0) {
+
+          this.wrongDataMessage = true;
+          this.signinErrorMessage = "Can't connect to server, please try again later.";
+        }
 
       }, () => {
 
@@ -128,6 +154,7 @@ export class SignComponent implements OnInit {
         }//(response.success)
 
       });//this.signService.login(
+
 
     }//if(this.email.valid)
 

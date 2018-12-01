@@ -1,5 +1,6 @@
 
 <mat-card class="details-card" *ngIf="found">
+    <img class="place-image" mat-card-image src="https://res.cloudinary.com/dhmyw1kdo/image/upload/v1543533701/sample.jpg" alt="Galway place photo." >
           <mat-card-header>
     <div mat-card-avatar class="header-imagemp"></div>
     <mat-card-title>{{user.name}}</mat-card-title>
@@ -7,5 +8,5 @@
   </mat-card-header>
 </mat-card>
 <div *ngIf="!found">
-  <h1>404 USER NOT FOUND</h1>
+  <h1>{{errorMessage}}</h1>
 </div>

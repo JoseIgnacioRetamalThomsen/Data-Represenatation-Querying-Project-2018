@@ -54,26 +54,36 @@ export class SignService {
 
   deleteUserById(id: string): Observable<any> {
 
-    console.log(this.sessionService.getToken());
+
     let httpOptions = {
       headers: new HttpHeaders({ 'Authorization': this.sessionService.getToken() })
     };
 
-    return this.http.delete("http://localhost:8081/api/user1/" + id, httpOptions);
+    return this.http.delete("http://localhost:8081/api/user/" + id, httpOptions);
 
   }
 
   updateUserDetails(id: string, name: string, email: string) {
 
+    let httpOptions = {
+      headers: new HttpHeaders({ 'Authorization': this.sessionService.getToken() })
+    };
+
     const user: User = { id: id, name: name, email: email.toUpperCase() };
-    return this.http.put("http://localhost:8081/api/updateuser/" + id, user);
+
+    return this.http.put("http://localhost:8081/api/updateuser/" + id, user, httpOptions);
 
   }
 
   updatePasswordById(id: string, password: string) {
+
+    let httpOptions = {
+      headers: new HttpHeaders({ 'Authorization': this.sessionService.getToken() })
+    };
+
     const req = { password: password };
 
-    return this.http.put("http://localhost:8081/api/updatepassword/" + id, req);
+    return this.http.put("http://localhost:8081/api/updatepassword/" + id, req, httpOptions);
 
   }
 }

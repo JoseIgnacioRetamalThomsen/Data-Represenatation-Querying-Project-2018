@@ -1,12 +1,12 @@
 <div *ngIf='users'>
 
-  <mat-list>
+  <mat-list class="user-list">
 
     <mat-list-item *ngFor="let user of users" (click)="onUserClick()" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
 
       <a mat-list-item routerLink="/detail/{{user._id}}" class="link">
 
-        <img matListAvatar src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="...">
+        <img matListAvatar src="https://res.cloudinary.com/dhmyw1kdo/image/upload/v1543605732/Galway_city/avatar.jpg" alt="...">
         <h4 mat-line>{{user.name}}</h4>
 
       </a>
@@ -19,11 +19,6 @@
 
 </div>
 <div *ngIf="!users">
-  <h4>Connection promblem try again later.</h4>
+  <h4>{{errorMessage}}</h4>
 </div>
 
-<!--<img matListAvatar src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="...">
-   <mat-icon mat-list-icon>face</mat-icon>
-<a routerLink="/detail/{{user._id}}">
-</a>
-   -->

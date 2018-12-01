@@ -1,21 +1,21 @@
 @import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
    
-
-    
- 
-  
+      
 .left{
     flex:30%;
+    justify-content:  center;
 }
 .right{
        flex:70%;
+       justify-content:  center;
      }
 .main{
 
 display: flex;
+justify-content:  center;
 
-align-content: center;
-  }
+
+}
   .comment-form{
     display: flex;
     flex-direction: column;
@@ -32,4 +32,14 @@ align-content: center;
   }
   .placesCard{
     padding-top: 7px;
+    max-width: 800px;
   }
+  /*
+  .place-image{
+    max-width: 800px;
+  }
+  .descriptio-paragraph{
+    
+      max-width: 700px;
+    
+  }*/

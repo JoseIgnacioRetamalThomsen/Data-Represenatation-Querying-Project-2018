@@ -10,6 +10,7 @@ export class UsersSideListComponent implements OnInit {
 
   //list of users with only basic data (name, id)
   users;
+  errorMessage = ""
 
   constructor(private httpService: SignService) { }
 
@@ -21,11 +22,14 @@ export class UsersSideListComponent implements OnInit {
       this.users = data;
 
     }, (err) => {
-      
-      console.log(err);
-      
-      
-  });
+
+      if (err.status == 0) {
+        this.errorMessage = "Server not available please try again later";
+      } else if (err.status == 500) {
+        this.errorMessage = "Server error please try again later.";
+      }
+
+    });
 
   }//ngOnInit() 
 

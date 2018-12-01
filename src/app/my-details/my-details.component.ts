@@ -5,7 +5,7 @@ import { FormControl, Validators } from '@angular/forms';
 import { Router } from "@angular/router";
 import { NgForm } from "@angular/forms";
 import { Inject } from '@angular/core';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, ErrorStateMatcher } from '@angular/material';
 import { MessageDialogComponent } from './../message-dialog/message-dialog.component';
 
 @Component({
@@ -17,6 +17,8 @@ export class MyDetailsComponent implements OnInit {
 
   disabled = false;
   hide = true;
+
+
 
   //form control
 
@@ -71,27 +73,53 @@ export class MyDetailsComponent implements OnInit {
   /*
   * Change details
   */
-  onChangeDetails(detailsForm) {
+  onChangeDetails() {
 
-    console.log(this.name.value);
-
-    console.log(this.sessionService.getEmail());
+    var tempData;
 
     //check if valid and changes
     if (this.name.valid && this.email.valid && (this.email.value != this.sessionService.getEmail() || this.name.value != this.sessionService.getName())) {
-      console.log("dif");
+
       //update values in database 
-      this.signService.updateUserDetails(this.user._id, this.name.value, this.email.value).subscribe(() => {
-        //response so update succesful
+      this.signService.updateUserDetails(this.user._id, this.name.value, this.email.value).subscribe((data) => {
 
-        //update session data
-        this.sessionService.logIn(this.name.value, this.email.value, this.user._id, this.sessionService.getToken());
+        tempData = data
 
-        //pop message to user
-        this.openDialog("Account updated!", true);
+      }, (error) => {
 
-        //reload windows for reload data
+        if (error.status == 0) {
 
+          this.openDialog("Connection problem , try again.", false);
+
+        } else if (error.status == 400) {
+
+          this.openDialog("wrong data, try again.", false);
+
+        } else if (error.status == 500) {
+
+          this.openDialog("Server error , try again.", false);
+
+        } else if (error.status == 403) {
+
+          //Unauthorized logout and reload
+          this.sessionService.logOut();
+          this.router.navigate(['home']);
+          window.location.reload();
+
+        }
+
+      }, () => {
+
+        if (tempData) {
+          ///update sucess
+          if (tempData.success) {
+
+            //update session data
+            this.sessionService.logIn(this.name.value, this.email.value, this.user._id, this.sessionService.getToken());
+
+            this.openDialog("Account updated!", true);
+          }
+        }
       });//this.signService.updateUserDetails(
 
     }//if(this.email.value !...
@@ -101,7 +129,7 @@ export class MyDetailsComponent implements OnInit {
   /*
   *  Change password
   */
-  onChangePassword(form: NgForm) {
+  onChangePassword() {
 
     //check if passwords are valid
     if (this.passwordNew.valid && this.password.valid) {
@@ -113,15 +141,27 @@ export class MyDetailsComponent implements OnInit {
         response = data;
 
       }, (err) => {
+        if (err.status == 401) {
 
-        //wrong password
-        this.wrongPassword = true;
+          //wrong password
+          this.wrongPassword = true;
+        } else if (err.status == 500) {
+
+          this.openDialog("Server error , try again.", false);
+
+        } else if (err.status == 0) {
+
+          this.openDialog("Connection problem , try again.", false);
+
+        }
 
       }, () => {
 
         //check response
         if (response.success) {
-           
+
+          //ready to change password
+          //call private method wich update the password by subscribint to updatePasswordById()
           this.upDatePassword();
 
         } else {
@@ -142,13 +182,24 @@ export class MyDetailsComponent implements OnInit {
   }//onChangePassword
 
   private upDatePassword() {
-    //ready for change pasword
 
     this.signService.updatePasswordById(this.sessionService.getId(), this.passwordNew.value).subscribe(() => {
 
     }, (err) => {
+      if (err.status == 401) {
 
-      this.wrongPassword = true;
+        //wrong password
+        this.wrongPassword = true;
+        
+      } else if (err.status == 500) {
+
+        this.openDialog("Server error , try again.", false);
+
+      } else if (err.status == 0) {
+
+        this.openDialog("Connection problem , try again.", false);
+
+      }
 
     }, () => {
 
@@ -162,6 +213,7 @@ export class MyDetailsComponent implements OnInit {
       this.wrongPassword = false;
 
     });// this.signService.updatePasswordById(t
+
   }
 
   /*
@@ -169,10 +221,34 @@ export class MyDetailsComponent implements OnInit {
   */
   onDelete() {
 
+    var dataTemp;
     //user sign service to delete account using id    
     this.signService.deleteUserById(this.user._id).subscribe((data) => {
 
-      if (data.n == 1) {
+      dataTemp = data;
+
+    }, (error) => {
+
+      if (error.status == 403) {
+
+        //invalid token just logout and reload
+        this.sessionService.logOut();
+        //navigate to home page
+        this.router.navigate(['home']);
+
+        //reload app
+        window.location.reload();
+
+      } else if (error.status == 0) {
+        //pop message to user
+        this.openDialog("Connection problem , try again.", false);
+
+
+      }
+    }, () => {
+
+      //deleted
+      if (dataTemp.n == 1) {
 
         //delet done so log out
         this.sessionService.logOut();
@@ -245,7 +321,7 @@ export class MyDetailsComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
+
 
       if (reload) {
         window.location.reload();

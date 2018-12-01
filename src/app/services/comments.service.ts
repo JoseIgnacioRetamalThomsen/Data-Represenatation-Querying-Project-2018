@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Comment } from './../classes/Comment';
+import { SessionService } from './session.service';
+
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +15,8 @@ import { Comment } from './../classes/Comment';
 export class CommentsService {
 
   constructor(
-    private http: HttpClient
+    private http: HttpClient,
+    private sessionService: SessionService
   ) { }
 
   /*
@@ -22,9 +25,13 @@ export class CommentsService {
   */
   addComment(commenterName: string, commenterId: string, placeId: string,comment:string):Observable<any> {
 
+    let httpOptions = {
+      headers: new HttpHeaders({ 'Authorization': this.sessionService.getToken() })
+    };
+
     const commentToSend: Comment = { commenterName: commenterName, commenterId: commenterId, placeId: placeId,comment:comment };
 
-    return this.http.post("http://localhost:8081/api/comment", commentToSend);
+    return this.http.post("http://localhost:8081/api/comment", commentToSend, httpOptions);
 
   }//addComment
 
@@ -44,7 +51,12 @@ export class CommentsService {
 
   deletecommentId(id: string): Observable<any> {
 
-    return this.http.delete("http://localhost:8081/api/comment/" + id);
+    let httpOptions = {
+      headers: new HttpHeaders({ 'Authorization': this.sessionService.getToken() })
+    };
+    
+
+    return this.http.delete("http://localhost:8081/api/comment/" + id, httpOptions);
 
   }//deletecommentId
 

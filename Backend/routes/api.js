@@ -69,7 +69,8 @@ router.post('/signup', function (req, res) {
     //check request
     if (!req.body.email || !req.body.password) {
 
-        res.json({ success: false, msg: 'Please pass username and password.' });
+        //bad request 
+        res.status(400).json({ success: false, msg: 'Please pass username and password.' });
 
     } else {
 
@@ -82,13 +83,23 @@ router.post('/signup', function (req, res) {
         // save the user
         newUser.save(function (err, user) {
             if (err) {
+                //email exitst
+                if (err.code = "11000") {
+                    //if email existe we consider as a bad request
 
-                return res.json({ success: false, msg: 'Username already exists.' });
+                    return res.status(400).send('Email already in use.');
+
+
+                }
+                else //other error
+                    return res.status(500).json({ success: false, msg: 'Server error' });
+
             }
 
             //create token
             var token = jwt.sign(user.toJSON(), config.secret);
-            res.json({ success: true, token: 'JWT ' + token, id: user._id });
+            //created
+            res.status(201).json({ success: true, token: 'JWT ' + token, id: user._id });
 
         });
     }
@@ -100,14 +111,13 @@ router.post('/signup', function (req, res) {
 */
 router.post('/signin', function (req, res) {
 
-    console.log("mk");
-
     userModel.findOne({
         email: req.body.email
     }, function (err, user) {
-        if (err) throw err;
 
-        if (!user) {
+        if (err) {
+            return res.status(500).json({ success: false, msg: 'Server error' });
+        } else if (!user) {
             res.status(401).send({ success: false, msg: 'User not found.' });
         } else {
             // check if password matches
@@ -118,7 +128,7 @@ router.post('/signin', function (req, res) {
                     var token = jwt.sign(user.toJSON(), config.secret);
 
                     // return the information including token as JSON
-                    res.json({ success: true, token: 'JWT ' + token, name: user.name, user: user.email, id: user._id });
+                    res.status(200).json({ success: true, token: 'JWT ' + token, name: user.name, user: user.email, id: user._id });
 
                 } else {
                     res.status(401).send({ success: false, msg: 'Wrong password.' });
@@ -139,11 +149,11 @@ router.get('/usernames', function (req, res) {
     userModel.find({}, "name", function (err, data) {
 
         if (err) {
-            res.send(err);
+            return res.status(500).json({ success: false, msg: 'Server error' });
         }
 
-        //send all user
-        res.json(data);
+        //OK , send all user 
+        res.status(200).json(data);
 
     });
 
@@ -159,19 +169,23 @@ router.get('/user/:id', function (req, res) {
         userModel.findById(req.params.id, '-password', function (err, user) {
 
             //not found response
-            if (!user || err) {
+            if (!user) {
                 res.status(404).send({ success: false, msg: 'User not found.' });
+            } else if (err) {
+
+                return res.status(500).json({ success: false, msg: 'Server error' });
+
             } else {
 
-                res.json(user);
+                res.status(200).json(user);
             }
         });
     } catch (Error) {
-        res.status(404).send({ success: false, msg: 'User not found.' });
+
+        res.res.status(500).json({ success: false, msg: 'Server error' });
     }
 
 });//Get one user by id
-
 
 /*
 * Get one user by email
@@ -181,8 +195,10 @@ router.get('/userEmail/:email', function (req, res) {
     try {
         userModel.findOne({ email: req.params.email }, '-password', function (err, data) {
 
-            if (!data || err)
+            if (!data)
                 res.status(404).send({ success: false, msg: 'User not found.' });
+            else if (err)
+                res.res.status(500).json({ success: false, msg: 'Server error' });
             else
                 res.json(data);
 
@@ -196,55 +212,64 @@ router.get('/userEmail/:email', function (req, res) {
 /*
 *   Delete by id
 */
-router.delete("/user/:id", function (req, res) {
+router.delete('/user/:id', passport.authenticate('jwt', { session: false }), function (req, res) {
 
-    console.log(req.params.id);
-
-    userModel.deleteOne({ _id: req.params.id }, function (err, data) {
-        if (err) {
-            res.send(err);
-        }
-        res.send(data);
-    })
-
-});// Delete by id
-
-
-
-router.delete('/user1/:id', passport.authenticate('jwt', { session: false }), function (req, res) {
-    console.log("caLLDFAmnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnS");
     var token = getToken(req.headers);
+
     if (token) {
+
         userModel.deleteOne({ _id: req.params.id }, function (err, data) {
 
-            if (err) return next(err);
+            if (err) {
 
-            res.send(data);
-        })
+                res.res.status(500).json({ success: false, msg: 'Server error' });
+
+            }
+
+            res.status(200).send(data);
+        });
+
     } else {
+
         return res.status(403).send({ success: false, msg: 'Unauthorized.' });
+
     }
+
 });
 
 
 /*
-* Update 
+* Update  token requered
 */
-router.put('/updateuser/:id', function (req, res) {
+router.put('/updateuser/:id', passport.authenticate('jwt', { session: false }), function (req, res) {
 
-    console.log("Update user request ffor " + req.params.id);
+    var token = getToken(req.headers);
 
-    userModel.findByIdAndUpdate(req.params.id, { $set: req.body },
-        function (err, data) {
-            if (err) {
-                res.send(err);
-                console.log(" User update unsuccessful :" + req.params.id);
-            }
+    if (token) {
 
-            res.send(data);
+        userModel.findByIdAndUpdate(req.params.id, { $set: req.body },
+            function (err, data) {
+                if (err) {
 
-            console.log(" User update successful :" + req.params.id);
-        });
+                    if (err.name = 'CasteError') {
+                        res.status(400).send({ success: false, msg: 'Wrong user id.' });
+                    } else {
+                        res.res.status(500).send({ success: false, msg: 'Server error' });
+                    }
+
+
+                } else {
+
+                    res.status(200).json({ success: true, msg: 'Updated' });
+
+                }
+            });
+
+    } else {
+
+        return res.status(403).send({ success: false, msg: 'Unauthorized.' });
+
+    }
 
 });//updateuser by id
 
@@ -253,37 +278,49 @@ router.put('/updateuser/:id', function (req, res) {
 *
 *  get id as parameter and new password in boby as {password:password}
 */
-router.put('/updatepassword/:id', function (req, res) {
+router.put('/updatepassword/:id', passport.authenticate('jwt', { session: false }), function (req, res) {
 
-    console.log("Update Password request from " + req.params.id);
-
-    var newPass;
-    //encrypt password
-    bcrypt.genSalt(10, function (err, salt) {
-        if (err) {
-            return err;
-        }
-        bcrypt.hash(req.body.password, salt, null, function (err, hash) {
+    var token = getToken(req.headers);
+    if (token) {
+        var newPass;
+        //encrypt password
+        bcrypt.genSalt(10, function (err, salt) {
             if (err) {
-                throw err;
+                return err;
             }
-            newPass = hash;
-            //update encrypted password
-            userModel.findByIdAndUpdate(req.params.id, { $set: { password: newPass } },
-                function (err, data) {
-                    if (err) {
-                        res.send(err);
+            bcrypt.hash(req.body.password, salt, null, function (err, hash) {
+                if (err) {
 
-                    }
+                    res.status(400).send({ success: false, msg: 'Wrong password.' });
 
-                    res.send(data);
+                }
+                newPass = hash;
+                //update encrypted password
+
+                userModel.findByIdAndUpdate(req.params.id, { $set: { password: newPass } },
+                    function (err, data) {
+                        if (err) {
+
+                            if (err.name = 'CasteError') {
+                                res.status(400).send({ success: false, msg: 'Wrong password.' });
+                            } else {
+                                res.res.status(500).send({ success: false, msg: 'Server error' });
+                            }
+
+                        }
+
+                        res.status(200).send(data);
 
 
-                });
+                    });
+
+            });
 
         });
+    } else {
 
-    });
+        return res.status(403).send({ success: false, msg: 'Unauthorized.' });
+    }
 
 });//updatae passowrd by id
 
@@ -301,24 +338,21 @@ router.put('/updatepassword/:id', function (req, res) {
 
 router.get('/places', function (req, res) {
 
-    console.log("All places requested.")
+    //setTimeout(function () { //testing 
 
-    setTimeout(function () {
+    placesModel.find({}, function (err, data) {
 
-        placesModel.find({}, function (err, data) {
+        if (err) {
 
-            if (err) {
-                res.send(err);
-            }
+            res.res.status(500).send({ success: false, msg: 'Server error' });
 
+        }
 
-            res.json(data);
-            console.log("All places request sent back.")
+        res.status(200).json(data);
 
-        });
-    }, 4000);
+    });
 
-
+    //}, 4000);
 
 });
 
@@ -336,27 +370,32 @@ router.get('/places', function (req, res) {
 * Add new comment
 */
 
-router.post('/comment', function (req, res) {
+router.post('/comment', passport.authenticate('jwt', { session: false }), function (req, res) {
 
-    console.log("new to comment for : " + req.body.placeId);
+    var token = getToken(req.headers);
+    if (token) {
 
-    //create new comment
-    commentsModel.create({
-        commenterName: req.body.commenterName,
-        commenterId: req.body.commenterId,
-        placeId: req.body.placeId,
-        comment: req.body.comment
+        //create new comment
+        commentsModel.create({
+            commenterName: req.body.commenterName,
+            commenterId: req.body.commenterId,
+            placeId: req.body.placeId,
+            comment: req.body.comment
 
-    }, function (err) {
-        //if err send error back
-        if (err) {
-            res.send(err);
-        }
+        }, function (err) {
+            //if err send error back
+            if (err) {
 
-        //send positive response after create comment in db
-        res.send({ created: true });
+                res.res.status(500).send({ success: false, msg: 'Server error' });
+            }
 
-    });//commentsModel.create({
+            //send positive response after create comment in db
+            res.status(201).send({ success: true, msg: 'Comment Created.' });
+
+        });//commentsModel.create({
+    } else {
+        return res.status(403).send({ success: false, msg: 'Unauthorized.' });
+    }
 
 
 
@@ -368,20 +407,21 @@ router.post('/comment', function (req, res) {
 
 router.get('/comments/:placeId', function (req, res) {
 
-    console.log("Comments requested for = " + req.params.placeId);
-
     //find all commets using id
     commentsModel.find({ placeId: req.params.placeId }, '-password', function (err, data) {
 
-        //if err send error back
-        if (err) {
-            res.send(err);
+        //not found
+        if (!data) {
+            res.status(404).send({ success: false, msg: 'Place not found.' });
+        } else if (err) { //error
+
+            return res.status(500).json({ success: false, msg: 'Server error' });
+
+        } else {
+
+            res.status(200).json(data);
+
         }
-
-        //send data back
-        res.json(data);
-
-        console.log("Comments requested done = " + req.params.placeId);
 
     });// commentsModel.find({ placeId:
 
@@ -390,25 +430,33 @@ router.get('/comments/:placeId', function (req, res) {
 /*
 *   Delete comment by id
 */
-router.delete("/comment/:id", function (req, res) {
+router.delete("/comment/:id",function (req, res) {
 
-    console.log("Request to delete a comment, id: " + req.params.id);
+    var token = getToken(req.headers);
+   
+    if (token) {
 
-    //delete comment using id
-    commentsModel.deleteOne({ _id: req.params.id }, function (err, data) {
+        //delete comment using id
+        commentsModel.deleteOne({ _id: req.params.id }, function (err, data) {
 
-        //if err send error back
-        if (err) {
-            res.send(err);
-        }
 
-        //commet was deleted, send response
-        res.send(data);
+            //not found
+            if (!data) {
+                res.status(404).send({ success: false, msg: 'Place not found.' });
+            } else if (err) { //error
 
-        console.log("Request to delete done.")
+                return res.status(500).json({ success: false, msg: 'Server error' });
 
-    });
+            } else {
 
+                res.status(200).send(data);
+
+            }
+
+        });
+    } else {
+        return res.status(403).send({ success: false, msg: 'Unauthorized.' });
+    }
 });// Delete by id
 
 /*
@@ -416,7 +464,7 @@ router.delete("/comment/:id", function (req, res) {
 *
 *  get id as parameter and new password in boby as {password:password}
 */
-router.put('/updatecomment/:id', function (req, res) {
+router.put('/updatecomment/:id', passport.authenticate('jwt', { session: false }), function (req, res) {
 
     console.log("Update comment request from " + req.params.id);
 
@@ -473,15 +521,24 @@ router.get('/api/search/:s', function (req, res) {
 
 
 getToken = function (headers) {
+
     if (headers && headers.authorization) {
+
         var parted = headers.authorization.split(' ');
+
         if (parted.length === 2) {
+
             return parted[1];
+
         } else {
+
             return null;
         }
+
     } else {
+
         return null;
+
     }
 };
 

@@ -12,20 +12,20 @@
   <div class="right">
 
 
-    <mat-card>
+    <mat-card class="placesCard">
 
-      <mat-card-header class="placesCard">
+      <mat-card-header >
 
-        <img mat-card-avatar src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="...">
+        <img mat-card-avatar src="https://res.cloudinary.com/dhmyw1kdo/image/upload/v1543605657/Galway_city/logo.jpg" alt="...">
         <mat-card-title>{{place.name}}</mat-card-title>
         <mat-card-subtitle>Galway</mat-card-subtitle>
 
       </mat-card-header>
 
-      <img mat-card-image src="{{place.photoAddress}}" alt="Galway place photo.">
+      <img class="place-image" mat-card-image src="{{place.photoAddress}}" alt="Galway place photo." >
 
       <mat-card-content>
-        <p>
+        <p class="descriptio-paragraph">
           {{place.description}}
         </p>
       </mat-card-content>
@@ -47,7 +47,7 @@
 
             <mat-card-header>
 
-              <img mat-card-avatar src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="...">
+              <img mat-card-avatar src="https://res.cloudinary.com/dhmyw1kdo/image/upload/v1543605732/Galway_city/avatar.jpg" alt="...">
               <mat-card-title>{{comment.commenterName}}</mat-card-title>
 
             </mat-card-header>
@@ -76,7 +76,7 @@
       <!--new comment-->
       <div *ngIf="isLogin">
 
-        <form (submit)="onAddCooment(postForm)" #postForm="ngForm">
+        <form (submit)="onAddCooment()" >
 
           <div class="comment-form">
 
@@ -87,6 +87,7 @@
 
             </mat-form-field>
 
+              <h4 *ngIf="isCommentError">{{commentError}}</h4>
             <button mat-raised-button color="accent" type="submit" class="button">Add</button>
 
           </div>
@@ -103,6 +104,10 @@
 
     </mat-card>
 
+    
+
   </div>
 
+  
 </div>
+<h1 *ngIf="isPlacesError">{{placesError}}</h1>

@@ -8,7 +8,7 @@ import { SessionService } from './../services/session.service';
 import { NgForm } from "@angular/forms";
 import { formArrayNameProvider } from '@angular/forms/src/directives/reactive_directives/form_group_name';
 import { Inject } from '@angular/core';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, ErrorStateMatcher } from '@angular/material';
 import { EditCommentDialogComponent } from './../edit-comment-dialog/edit-comment-dialog.component';
 import { FormControl, Validators } from '@angular/forms';
 
@@ -39,12 +39,15 @@ export class CityPlacesComponent implements OnInit {
 
   userId;
 
+  isPlacesError = false;
+  placesError = "";
 
-
+  commentError = ""
+  isCommentError = false;
 
   //values for max min name lengt
   mincommentLength = 1;
-  maxcommentLength = 32
+  maxcommentLength = 6000;
   //Create and add validotes to password Form Control : required,minLength, maxLength
   commentControl = new FormControl('', [Validators.required, Validators.minLength(this.mincommentLength), Validators.maxLength(this.maxcommentLength)]);
 
@@ -68,7 +71,7 @@ export class CityPlacesComponent implements OnInit {
     this.isLogin = sessionService.isLogin();
     this.userId = sessionService.getId();
 
-    const num = this.route.snapshot.paramMap.get('num');
+    const ciTyNum = this.route.snapshot.paramMap.get('num');
 
     //get places
     this.places = this.dataService.getPlaces();
@@ -78,49 +81,73 @@ export class CityPlacesComponent implements OnInit {
     if (this.places == null) {
 
       //get services
-      this.placesService.getPlaces().subscribe(((data) => {
+      this.placesService.getPlaces().subscribe((data) => {
 
         this.places = data;
 
         //set the place to show using the raoute parameter
-        this.place = this.places[num];
+        this.place = this.places[ciTyNum];
+
+        if (this.place == null) {
+
+          this.isPlacesError = true;
+          this.placesError = "place not found.";
+
+        } else {
+
+          //load comments
+          this.getComments();
+
+          //save places in data service
+          this.dataService.setPlaces(this.places);
+        }
+      }, (error) => {
+
+        if (error.status == 500) {
+
+          this.isPlacesError = true;
+          this.placesError = "Server error, please try again later."
+
+        } else if (error.status == 0) {
+
+          this.isPlacesError = true;
+          this.placesError = "Conection problems/ server down try again later."
+        }
+
+      }, () => {
+
+        //set the place to show using the router parameter
+        this.place = this.places[ciTyNum];
+
+        //check for brong parameter tha may be input manually
+        if (this.place == null) {
+
+          this.isPlacesError = true;
+          this.placesError = "404 place not found.";
+
+        }
 
         //load comments
         this.getComments();
-        
-        //save places in data service
-        this.dataService.setPlaces(this.places);
 
-      }));//this.placesService.getPlaces()
+      });//this.placesService.getPlaces()
 
     } else {//if not null means they are already in data.service
 
       //set place
-      this.place = this.places[num];
+      this.place = this.places[ciTyNum];
+
+      //check for brong parameter tha may be input manually
+      if (this.place == null) {
+
+        this.isPlacesError = true;
+        this.placesError = "place not found.";
+
+      }
       //load comments
       this.getComments();
 
     }//if (this.places == null)
-
-
-
-
-
-    /*
-        //get places 
-        this.placesService.getPlaces().subscribe(((data) => {
-    
-          this.places = data;
-    
-          //set the place to show using the raoute parameter
-          this.place = this.places[num];
-    
-          //load comments
-          this.getComments();
-    
-        }));//this.placesService.getPlaces()
-    */
-
 
   } //constructor
 
@@ -140,6 +167,14 @@ export class CityPlacesComponent implements OnInit {
 
       this.allCommentsPlace = data;
 
+    }, (error) => {
+      if (error.status == 404) {
+
+        this.isPlacesError = true;
+        this.placesError = "404 place not found.";
+      }
+    }, () => {
+
     });
 
   }//getComments()
@@ -148,24 +183,45 @@ export class CityPlacesComponent implements OnInit {
   /*
   * Add new post to database "posts", using session data and the entered comment
   */
-  onAddCooment(form: NgForm) {
-    console.log(this.commentControl.value);
+  onAddCooment() {
+
+    var tempData;
 
     if (this.commentControl.valid) {
       //suscribe to add comment in comments service
-      this.commentsService.addComment(this.sessionService.getName(), this.sessionService.getId(), this.place._id, this.commentControl.value).subscribe(() => {
+      this.commentsService.addComment(this.sessionService.getName(), this.sessionService.getId(), this.place._id, this.commentControl.value).subscribe((data) => {
 
-        //respose so commet was added
+        tempData = data;
 
-        //reset form
-        //form.reset();
-        //this.commentControl.setValue("");
-        this.commentControl.reset();
+      }, (error) => {
 
-        //reload page
-        this.ngOnInit();
-        //this.getComments();
+        if (error.status == 500) {
 
+          this.isCommentError = true;
+          this.commentError = "Server error, try again later"
+
+        } else if (error.status == 403) {
+
+          //unauthorized logout and reload
+          this.sessionService.logOut();
+          this.router.navigate(['home']);
+          window.location.reload();
+
+        } else if (error.status == 0) {
+
+          this.isCommentError = true;
+          this.commentError = "Connection probles , try again later."
+        }
+      }, () => {
+
+        if (tempData.success) {
+
+          this.isCommentError = false;
+
+          this.commentControl.reset();
+          this.ngOnInit();
+
+        }
       });
     }
   }//onAddPost(form:NgForm){
@@ -176,8 +232,11 @@ export class CityPlacesComponent implements OnInit {
   */
   onDelete(id: string) {
 
+    var tempData;
+
     this.commentsService.deletecommentId(id).subscribe((data) => {
 
+      tempData = data;
       //id delete reset
       if (data.n == 1) {
 
@@ -185,6 +244,31 @@ export class CityPlacesComponent implements OnInit {
         this.getComments();
       }
 
+    }, (error) => {
+      if (error.status == 500) {
+
+        this.isCommentError = true;
+        this.commentError = "Server error, try again later"
+
+      } else if (error.status == 403) {
+
+        //unauthorized logout and reload
+        this.sessionService.logOut();
+        this.router.navigate(['home']);
+        window.location.reload();
+
+      } else if (error.status == 0) {
+
+        this.isCommentError = true;
+        this.commentError = "Connection problems , try again later."
+      }
+
+    }, () => {
+      if (tempData.n == 1) {
+
+        //reload comments
+        this.getComments();
+      }
     });
 
   }//onDelete(id:string){

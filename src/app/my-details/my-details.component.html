@@ -5,7 +5,7 @@
 
   </mat-card-header>
 
-  <form class="EditDetailsForm" (submit)="onChangeDetails(detailsForm)" #detailsForm="ngForm">
+  <form class="EditDetailsForm" (submit)="onChangeDetails()" >
 
     <div class="formContainer" *ngIf=user>
 
@@ -39,7 +39,7 @@
 
   </mat-card-header>
 
-  <form class="changePasswordForm" (submit)="onChangePassword(passForm)" #passForm="ngForm">
+  <form class="changePasswordForm" (submit)="onChangePassword()" >
     <div class="formContainer" *ngIf=user>
 
       <mat-form-field>
@@ -83,6 +83,7 @@
     <mat-checkbox class="example-margin" [(ngModel)]="disabled" [ngModelOptions]="{standalone: true}">Delete my account</mat-checkbox>
 
     <button mat-raised-button color="accent" (click)="onDelete()" [disabled]="!disabled">DELETE MY ACCOUNT</button>
+   
 
   </section>
 

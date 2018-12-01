@@ -12,8 +12,10 @@ import { User } from '../classes/User';
 export class UserDetailsComponent implements OnInit {
 
   user;
-  found =true;
-  
+  found = true;
+
+  errorMessage = "";
+
   //id1;
 
   constructor(
@@ -35,17 +37,27 @@ export class UserDetailsComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
 
     this.signService.getUserById(id).subscribe((userData) => {
-      console.log("ere");
-      console.log(userData);
+
       this.user = userData;
 
-
     }, (err) => {
-      
-      console.log(err);
-      this.found = false;
-      
-  });
+
+
+      if (err.status == 404) {
+
+        this.found = false;
+        this.errorMessage = "404 User Not Found."
+
+      } else if (err.status == 500) {
+        this.found = false;
+        this.errorMessage = "Server problen try again later."
+
+      } else if (err.status == 0) {
+        this.found = false;
+        this.errorMessage = "Connection problem, tru again later."
+      }
+
+    });
 
 
     //this.id1=id;
