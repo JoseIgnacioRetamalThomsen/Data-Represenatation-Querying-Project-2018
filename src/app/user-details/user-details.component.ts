@@ -2,7 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { SignService } from '../services/sign.service';
-import { User } from '../classes/User';
+
+/*
+* Shows all details for 1 user
+*/
 
 @Component({
   selector: 'app-user-details',
@@ -11,12 +14,14 @@ import { User } from '../classes/User';
 })
 export class UserDetailsComponent implements OnInit {
 
+  //user data
   user;
   found = true;
 
+  //error
   errorMessage = "";
 
-  //id1;
+
 
   constructor(
     private route: ActivatedRoute,
@@ -33,6 +38,7 @@ export class UserDetailsComponent implements OnInit {
     this.getUser();
   }
 
+  //get user data
   getUser() {
     const id = this.route.snapshot.paramMap.get('id');
 
@@ -58,10 +64,7 @@ export class UserDetailsComponent implements OnInit {
       }
 
     });
-
-
-    //this.id1=id;
-
+    
   }
 
 }

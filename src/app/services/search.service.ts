@@ -6,6 +6,9 @@ import { User } from '../classes/User';
 @Injectable({
   providedIn: 'root'
 })
+/*
+* Search not implemented
+*/
 export class SearchService {
 
   constructor(private http: HttpClient) { }

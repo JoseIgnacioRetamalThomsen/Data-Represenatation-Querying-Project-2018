@@ -3,35 +3,46 @@ import { Injectable } from '@angular/core';
 @Injectable({
   providedIn: 'root'
 })
+/*
+* Store session data in local storage
+*/
 export class SessionService {
 
   constructor() {
 
-    console.log("Seecion constructor , login " + localStorage.getItem('isLogin'));
+    //create login if do not exist
     if (localStorage.getItem('isLogin') == null) {
       localStorage.setItem('isLogin', "false");
     }
   }
 
+  //login, save all data in local storage 
   logIn(name: string, email: string, id: string, token: string) {
+
     localStorage.setItem('isLogin', "true");
     localStorage.setItem('name', name);
     localStorage.setItem('email', email);
     localStorage.setItem('id', id);
     localStorage.setItem('jwtToken', token);
-    console.log("logger in : " + name + " " + email);
+
 
 
   }
 
+  //remove all data from local stora and set login to false
   logOut() {
-    localStorage.removeItem('isLogin');
+
+    localStorage.setItem('isLogin', "false");
     localStorage.removeItem('name');
     localStorage.removeItem('email');
     localStorage.removeItem('id');
     localStorage.removeItem('jwtToken');
+
   }
 
+  /*
+  * Getters for all data
+  */
   isLogin(): boolean {
     if (localStorage.getItem('isLogin') == "false")
       return false;
@@ -49,4 +60,5 @@ export class SessionService {
   getToken(): string {
     return localStorage.getItem('jwtToken');
   }
+  
 }

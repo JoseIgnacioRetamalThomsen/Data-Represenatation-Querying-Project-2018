@@ -7,6 +7,11 @@ import { SessionService } from './session.service';
 @Injectable({
   providedIn: 'root'
 })
+
+/*
+* Manage all user data
+*/
+
 export class SignService {
 
   constructor(
@@ -15,7 +20,7 @@ export class SignService {
   ) { }
 
   //create new user, email is store in upper case
-  signUp(email: string, password: string, name: string) {
+  signUp(email: string, password: string, name: string): Observable<any> {
 
     const user: User = { email: email.toUpperCase(), password: password, name: name };
 
@@ -24,7 +29,7 @@ export class SignService {
   }
 
   //login 
-  signIn(email: string, password: string) {
+  signIn(email: string, password: string): Observable<any> {
 
     const user: User = { email: email.toUpperCase(), password: password, name };
 
@@ -33,20 +38,20 @@ export class SignService {
   }
 
   //return all user name no need authentication
-  getUsersName() {
+  getUsersName(): Observable<any> {
 
     return this.http.get("http://localhost:8081/api/usernames");
 
   }
 
   //return all user data but password no need authentication
-  getUserById(id: string) {
+  getUserById(id: string) : Observable<any>{
 
     return this.http.get("http://localhost:8081/api/user/" + id);
 
   }
 
-  getUserByEmail(email: string) {
+  getUserByEmail(email: string): Observable<any> {
 
     return this.http.get("http://localhost:8081/api/userEmail/" + email.toUpperCase());
 
@@ -63,7 +68,7 @@ export class SignService {
 
   }
 
-  updateUserDetails(id: string, name: string, email: string) {
+  updateUserDetails(id: string, name: string, email: string): Observable<any> {
 
     let httpOptions = {
       headers: new HttpHeaders({ 'Authorization': this.sessionService.getToken() })
@@ -75,7 +80,7 @@ export class SignService {
 
   }
 
-  updatePasswordById(id: string, password: string) {
+  updatePasswordById(id: string, password: string) : Observable<any>{
 
     let httpOptions = {
       headers: new HttpHeaders({ 'Authorization': this.sessionService.getToken() })

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {Inject} from '@angular/core';
-import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
+import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
 import {PopUpMessageData} from './../classes/PopUpMessageData';
 
 @Component({
@@ -8,6 +8,11 @@ import {PopUpMessageData} from './../classes/PopUpMessageData';
   templateUrl: './message-dialog.component.html',
   styleUrls: ['./message-dialog.component.css']
 })
+
+/*
+* Pop Up message
+*/ 
+
 export class MessageDialogComponent implements OnInit {
 
   constructor(
@@ -18,7 +23,9 @@ export class MessageDialogComponent implements OnInit {
   ngOnInit() {
   }
 
+  //close when click anywere
   onNoClick(): void {
+
     this.dialogRef.close();
   }
 

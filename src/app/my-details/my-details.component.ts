@@ -13,12 +13,16 @@ import { MessageDialogComponent } from './../message-dialog/message-dialog.compo
   templateUrl: './my-details.component.html',
   styleUrls: ['./my-details.component.css']
 })
+
+/*
+* Show details about a user
+*/
+
 export class MyDetailsComponent implements OnInit {
 
+  //delete account check box
   disabled = false;
   hide = true;
-
-
 
   //form control
 
@@ -99,7 +103,7 @@ export class MyDetailsComponent implements OnInit {
 
           this.openDialog("Server error , try again.", false);
 
-        } else if (error.status == 403) {
+        } else if (error.status == 401 || error.status == 403 ) {
 
           //Unauthorized logout and reload
           this.sessionService.logOut();
@@ -229,7 +233,7 @@ export class MyDetailsComponent implements OnInit {
 
     }, (error) => {
 
-      if (error.status == 403) {
+      if ( error.status ==401 || error.status == 403 ) {
 
         //invalid token just logout and reload
         this.sessionService.logOut();

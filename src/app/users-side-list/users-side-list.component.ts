@@ -6,6 +6,10 @@ import { SignService } from '../services/sign.service';
   templateUrl: './users-side-list.component.html',
   styleUrls: ['./users-side-list.component.css']
 })
+
+/*
+* Side list with all user names and links
+*/
 export class UsersSideListComponent implements OnInit {
 
   //list of users with only basic data (name, id)

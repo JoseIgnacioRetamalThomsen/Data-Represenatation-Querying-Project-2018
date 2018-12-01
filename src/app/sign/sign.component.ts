@@ -3,16 +3,19 @@ import { FormControl, Validators } from '@angular/forms';
 import { SignService } from '../services/sign.service'
 import { Router } from "@angular/router";
 import { SessionService } from './../services/session.service'
-import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { EOVERFLOW } from 'constants';
 
 @Component({
   selector: 'app-sign',
   templateUrl: './sign.component.html',
   styleUrls: ['./sign.component.css']
 })
+
+/*
+* Signin and sign up
+*/
 export class SignComponent implements OnInit {
 
+  //show/hide password
   hide = true;
 
   //form controls/validator
@@ -29,6 +32,7 @@ export class SignComponent implements OnInit {
   //Create and add validotes to password Form Control : required,minLength, maxLength
   name = new FormControl('', [Validators.required, Validators.minLength(this.minNameLength), Validators.maxLength(this.maxNameLength)]);
 
+  //error mesages
   wrongDataMessage = false;
   emailInUseMessage = true;
   signinErrorMessage = "";
@@ -159,8 +163,6 @@ export class SignComponent implements OnInit {
     }//if(this.email.valid)
 
   }//onSignIn()
-
-
 
   /*
   *form control methods

@@ -8,6 +8,9 @@ import {SearchService} from './../services/search.service';
   templateUrl: './search-result.component.html',
   styleUrls: ['./search-result.component.css']
 })
+/*
+* Search not imlemented
+*/
 export class SearchResultComponent implements OnInit {
 
   constructor(
@@ -21,7 +24,7 @@ this.router.routeReuseStrategy.shouldReuseRoute = () => false;
   }
 
   ngOnInit() {
-
+/*
     const s = this.route.snapshot.paramMap.get('searchFor');
 
     console.log("on search");
@@ -30,6 +33,7 @@ this.router.routeReuseStrategy.shouldReuseRoute = () => false;
       
 
     });
+    */
   }
 
 }

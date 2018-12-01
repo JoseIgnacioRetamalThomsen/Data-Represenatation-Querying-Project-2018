@@ -12,6 +12,8 @@ var userModel = require("../models/user");
 var placesModel = require("../Models/Places");
 var commentsModel = require("../Models/Comments");
 
+var Schema = mongoose.Schema;
+
 
 
 var bcrypt = require('bcrypt-nodejs');
@@ -430,10 +432,10 @@ router.get('/comments/:placeId', function (req, res) {
 /*
 *   Delete comment by id
 */
-router.delete("/comment/:id",function (req, res) {
+router.delete("/comment/:id", passport.authenticate('jwt', { session: false }), function (req, res) {
 
     var token = getToken(req.headers);
-   
+
     if (token) {
 
         //delete comment using id
@@ -466,23 +468,25 @@ router.delete("/comment/:id",function (req, res) {
 */
 router.put('/updatecomment/:id', passport.authenticate('jwt', { session: false }), function (req, res) {
 
-    console.log("Update comment request from " + req.params.id);
+    var token = getToken(req.headers);
 
-    commentsModel.findByIdAndUpdate(req.params.id, { $set: { comment: req.body.comment } },
+    if (token) {
 
-        function (err, data) {
-            //check for error
-            if (err) {
-                res.send(err);
-                console.log(" Comment update unsuccessful :" + req.params.id);
-            }
+        commentsModel.findByIdAndUpdate(req.params.id, { $set: { comment: req.body.comment } },
 
-            //respond back if update successful
-            res.send(data);
+            function (err, data) {
+                //check for error
+                if (err) {
+                    return res.status(500).json({ success: false, msg: 'Server error' });
 
-            console.log(" Comment update sucessfull :" + req.params.id);
-        });
+                }
+                //respond back if update successful
+                res.status(200).send(data);
 
+            });
+    } else {
+        return res.status(403).send({ success: false, msg: 'Unauthorized.' });
+    }
 });//updatae passowrd by id
 
 /*************************************************************************************************************************************
@@ -493,8 +497,11 @@ router.put('/updatecomment/:id', passport.authenticate('jwt', { session: false }
 **************************************************************************************************************************************
 *************************************************************************************************************************************/
 
-router.get('/api/search/:s', function (req, res) {
 
+
+router.get('/search/:s', function (req, res) {
+
+    var result = [];
     console.log("Search for  = " + req.params.s);
     var str = "/" + req.params.s + "/";
     //user
@@ -507,13 +514,17 @@ router.get('/api/search/:s', function (req, res) {
         console.log(data);
         res.json(data);
     });*/
-    userModel.find().where('name like Banessa').exec(function (err, data) {
+    userModel.find({name: req.params.s}).exec(function (err, data) {
 
         if (err) {
             res.send(err);
         }
-        console.log(data);
-        res.json(data);
+        
+        else{
+            const found ={ type:"user", id :data._id}
+            res.status(200).json(found);
+        }
+        
     });
 
 });//Get one user by email

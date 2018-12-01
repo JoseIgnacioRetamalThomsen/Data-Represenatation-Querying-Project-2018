@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { User } from '../classes/User';
-
 
 @Injectable({
   providedIn: 'root'
@@ -14,13 +12,13 @@ export class PlacesService {
   /*
   * Get all places
   */
-  getPlaces() {
+  getPlaces():Observable<any> {
 
     return this.http.get("http://localhost:8081/api/places");
 
   }//getPlaces()
 
-  getPlacesTitles(){
+  getPlacesTitles():Observable<any>{
 
     return this.http.get("http://localhost:8081/api/places/titles");
     

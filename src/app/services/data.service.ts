@@ -7,7 +7,9 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-
+/*
+* Use for stores places, and no reload all time page is navigate
+*/
 export class DataService {
 
 
@@ -15,30 +17,18 @@ export class DataService {
 
   constructor(
     private placesService: PlacesService,
-  ) { 
-    this.loadPlaces();
+  ) {
+    //this.loadPlaces();
   }
-
-  loadPlaces() {
-
-    this.placesService.getPlaces().subscribe(((data) => {
-
-      this.places = data;
-
-
-
-      console.log(this.places);
-    }));//this.placesService.getPlaces()
-
-  }
-
-  getPlaces(){
+  //return palces array
+  getPlaces() {
 
     return this.places;
- }
+  }
 
- setPlaces(places){
-   this.places =places;
- }
+  //set places for save
+  setPlaces(places) {
+    this.places = places;
+  }
 
 }

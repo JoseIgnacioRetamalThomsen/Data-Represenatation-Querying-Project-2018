@@ -73,7 +73,7 @@ import { SearchResultComponent } from './search-result/search-result.component';
 export class AppModule { 
 
   constructor(
-   private dataService :DataService
+  
   ) { 
  
   }

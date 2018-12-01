@@ -5,14 +5,9 @@ import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { CommentsService } from './../services/comments.service';
 import { SessionService } from './../services/session.service';
-import { NgForm } from "@angular/forms";
-import { formArrayNameProvider } from '@angular/forms/src/directives/reactive_directives/form_group_name';
-import { Inject } from '@angular/core';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, ErrorStateMatcher } from '@angular/material';
+import { MatDialog } from '@angular/material';
 import { EditCommentDialogComponent } from './../edit-comment-dialog/edit-comment-dialog.component';
 import { FormControl, Validators } from '@angular/forms';
-
-import { Comment } from './../classes/Comment';
 
 import { DataService } from './../services/data.service';
 
@@ -22,6 +17,7 @@ import { DataService } from './../services/data.service';
   styleUrls: ['./city-places.component.css'],
 
 })
+
 export class CityPlacesComponent implements OnInit {
 
   //the one place showing
@@ -36,12 +32,11 @@ export class CityPlacesComponent implements OnInit {
 
   //used for decide what to show in ui
   isLogin = false;
-
   userId;
 
+  //error message
   isPlacesError = false;
   placesError = "";
-
   commentError = ""
   isCommentError = false;
 
@@ -200,7 +195,7 @@ export class CityPlacesComponent implements OnInit {
           this.isCommentError = true;
           this.commentError = "Server error, try again later"
 
-        } else if (error.status == 403) {
+        } else if (error.status == 401 || error.status == 403) {
 
           //unauthorized logout and reload
           this.sessionService.logOut();
@@ -250,7 +245,7 @@ export class CityPlacesComponent implements OnInit {
         this.isCommentError = true;
         this.commentError = "Server error, try again later"
 
-      } else if (error.status == 403) {
+      } else if (error.status == 401 || error.status == 403) {
 
         //unauthorized logout and reload
         this.sessionService.logOut();
@@ -286,14 +281,38 @@ export class CityPlacesComponent implements OnInit {
 
     });
 
+    //response for dialog when closed
     dialogRef.afterClosed().subscribe(result => {
 
       //check result for reload if change happens
-      if (result) {
+      if (result.updated) {
 
         //reload comments
         this.getComments();
 
+        //remove dialog if is ther
+        this.isCommentError = false;
+
+      } else {
+
+        //catch eror from dialog
+        if (result.status == 500) {
+
+          this.isCommentError = true;
+          this.commentError = "Server error, try again later"
+
+        } else if (result.status == 401 || result.status == 403) {
+
+          //unauthorized logout and reload
+          this.sessionService.logOut();
+          this.router.navigate(['home']);
+          window.location.reload();
+
+        } else if (result.status == 0) {
+
+          this.isCommentError = true;
+          this.commentError = "Connection problems , try again later."
+        }
       }
 
     });//dialogRef.afterClosed().subscribe(result
