@@ -489,48 +489,6 @@ router.put('/updatecomment/:id', passport.authenticate('jwt', { session: false }
     }
 });//updatae passowrd by id
 
-/*************************************************************************************************************************************
-**************************************************************************************************************************************
-**************************************************************************************************************************************
-* Search (search.service.ts)
-**************************************************************************************************************************************
-**************************************************************************************************************************************
-*************************************************************************************************************************************/
-
-
-
-router.get('/search/:s', function (req, res) {
-
-    var result = [];
-    console.log("Search for  = " + req.params.s);
-    var str = "/" + req.params.s + "/";
-    //user
-    /*
-    userModel.find({ name:  req.params.s}, "", function (err, data) {
-  
-        if (err) {
-            res.send(err);
-        }
-        console.log(data);
-        res.json(data);
-    });*/
-    userModel.find({name: req.params.s}).exec(function (err, data) {
-
-        if (err) {
-            res.send(err);
-        }
-        
-        else{
-            const found ={ type:"user", id :data._id}
-            res.status(200).json(found);
-        }
-        
-    });
-
-});//Get one user by email
-
-
-
 getToken = function (headers) {
 
     if (headers && headers.authorization) {
