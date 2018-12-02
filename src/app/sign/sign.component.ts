@@ -144,11 +144,13 @@ export class SignComponent implements OnInit {
           //log in in session (local storate)
           this.session.logIn(response.name, this.email.value, response.id, response.token);
 
+         
           //navigate to home page
-          this.router.navigate(['home']);
+        
 
           //reload 
           window.location.reload();
+          this.router.navigate(['/home']); 
 
         } else {//wrong data
 

@@ -10,6 +10,7 @@ import { SearchResultComponent } from './search-result/search-result.component';
 
 
 const routes: Routes = [
+
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
   { path: 'places/:num', component: CityPlacesComponent },

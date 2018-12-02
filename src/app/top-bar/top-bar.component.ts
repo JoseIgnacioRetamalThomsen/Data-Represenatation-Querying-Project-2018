@@ -61,6 +61,9 @@ export class TopBarComponent implements OnInit {
   logOut() {
 
     this.session.logOut();
+    
+    //navigate to home and reload page
+    this.router.navigate(['']);
     window.location.reload();
   }
 

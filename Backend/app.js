@@ -59,7 +59,22 @@ app.use(function(req, res, next) {
   });
 */
 
+//use of /
+app.use("/", express.static(path.join(__dirname, "angular")));
 
-
+//re route empty to index
+app.get('/',function(req, res){
+res.sendFile(path.join(__dirname, "angular", "index.html"));
+});
+/*
+//route home to index
+app.get('/home',function(req, res){
+  res.sendFile(path.join(__dirname, "angular", "index.html"));
+  });
+*/
+  //route any to index
+  app.get('/*',function(req, res){
+    res.sendFile(path.join(__dirname, "angular", "index.html"));
+    })
 
 module.exports = app;
